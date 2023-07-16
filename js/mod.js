@@ -13,15 +13,21 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "α0.1",
-	name: "Tree Replanting",
+	num: "α0.2",
+	name: "Seedling",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
 	<h3>vα0.1</h3><br>
 		- The existence of this tree.<br>
 		- A reset layer: Forming J.<br>
-		> Contains 6 upgrades.`
+		> Contains 7 upgrades.<br>
+	<h3>vα0.2</h3><br>
+		- A new row aswell as a new layer.<br>
+		- A reset layer: Growth.<br>
+		> Contains 3 milestones.<br>
+		- New upgrades for Forming J.
+		`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -39,6 +45,12 @@ function canGenPoints(){
 		{return true}
 }
 
+function getBasePointGen() {
+	let gain = new Decimal(0.1)
+	if (hasUpgrade("j", 23)) gain = new Decimal(0.2)
+	return gain
+}
+
 // Calculate points/sec!
 function getPointGen() {
 	if(!canGenPoints())
@@ -50,8 +62,16 @@ function getPointGen() {
 	if (hasUpgrade("j", 13)) gain = gain.times(upgradeEffect("j", 13))
 	if (hasUpgrade("j", 14)) gain = gain.times(4)
 	if (hasUpgrade("j", 22)) gain = gain.times(upgradeEffect("j", 22))
+	if (hasMilestone("g", 0)) gain = gain.times(player.g.points.add(1).pow(1.5))
 	return gain
 }
+function getGrowthMilestone0Effect() {
+	let effect = new Decimal(1)
+	if (hasMilestone("g", 0)) effect = effect.times(player.g.points.add(1).pow(2))
+	return effect
+}
+
+function colored(text, color, tag='h3') { return `<${tag} style='color:${color};text-shadow:${color} 0px 0px 10px;'>${text}</${tag}>` }
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
@@ -60,8 +80,9 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		let text = "Current endgame: TBD"
-		return text
+		let text = "Current endgame: Bought the "
+		let text2 = colored("Current Endgame? ", "#fff")
+		return text + text2 + "upgrade."
 	}
 ]
 
