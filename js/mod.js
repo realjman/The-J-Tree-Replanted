@@ -1,26 +1,27 @@
 let modInfo = {
-	name: "The ??? Tree",
-	id: "mymod",
-	author: "nobody",
-	pointsName: "points",
+	name: "The J Tree: Replanted",
+	id: "tjtr",
+	author: "realjman",
+	pointsName: "J-fragments",
 	modFiles: ["layers.js", "tree.js"],
 
-	discordName: "",
+	discordName: "@rjman",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	initialStartPoints: new Decimal (1), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "α0.1",
+	name: "Tree Replanting",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+	<h3>vα0.1</h3><br>
+		- The existence of this tree.<br>
+		- A reset layer: Forming J.<br>
+		> Contains 6 upgrades.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -34,7 +35,8 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	return true
+	if (hasUpgrade("j", 11))
+		{return true}
 }
 
 // Calculate points/sec!
@@ -42,7 +44,12 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(1)
+	let gain = new Decimal(0.1)
+	if (hasUpgrade("j", 23)) gain = new Decimal(0.2)
+	if (hasUpgrade("j", 12) && !hasUpgrade("j", 14)) gain = gain.times(2)
+	if (hasUpgrade("j", 13)) gain = gain.times(upgradeEffect("j", 13))
+	if (hasUpgrade("j", 14)) gain = gain.times(4)
+	if (hasUpgrade("j", 22)) gain = gain.times(upgradeEffect("j", 22))
 	return gain
 }
 
@@ -52,6 +59,10 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+	function(){
+		let text = "Current endgame: TBD"
+		return text
+	}
 ]
 
 // Determines when the game "ends"
