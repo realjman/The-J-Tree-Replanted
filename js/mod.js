@@ -13,20 +13,23 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "α0.2",
-	name: "Seedling",
+	num: "Alpha 0.2.1",
+	name: "Seedling: Part 1.5",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>vα0.1</h3><br>
+	<h3>vα0.1: Tree Replanting</h3><br>
 		- The existence of this tree.<br>
 		- A reset layer: Forming J.<br>
 		> Contains 7 upgrades.<br>
-	<h3>vα0.2</h3><br>
+	<h3>vα0.2: Seedling</h3><br>
 		- A new row aswell as a new layer.<br>
 		- A reset layer: Growth.<br>
 		> Contains 3 milestones.<br>
 		- New upgrades for Forming J.
+	<h3>vα0.2.1: Seedling: Part 1.5</h3><br>
+		- New Milestone in Growth.
+		- Bug Fixes.
 		`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
@@ -64,11 +67,6 @@ function getPointGen() {
 	if (hasUpgrade("j", 22)) gain = gain.times(upgradeEffect("j", 22))
 	if (hasMilestone("g", 0)) gain = gain.times(player.g.points.add(1).pow(1.5))
 	return gain
-}
-function getGrowthMilestone0Effect() {
-	let effect = new Decimal(1)
-	if (hasMilestone("g", 0)) effect = effect.times(player.g.points.add(1).pow(2))
-	return effect
 }
 
 function colored(text, color, tag='h3') { return `<${tag} style='color:${color};text-shadow:${color} 0px 0px 10px;'>${text}</${tag}>` }

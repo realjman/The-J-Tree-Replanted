@@ -6,6 +6,7 @@ addLayer("j", {
         unlocked: true,
 		points: new Decimal(0),
     }},
+    resetDescription: "Form all your fragments into ",
     color: "#aba",
     requires: new Decimal(1), // Can be a function that takes requirement increases into account
     resource: "J-points", // Name of prestige currency
@@ -133,7 +134,7 @@ addLayer("j", {
             cost: new Decimal(2000),
             unlocked() {
                 let a = false
-                if (hasUpgrade("j", 24) && hasMilestone("g", 2)) a = true
+                if (hasUpgrade("j", 24) && hasMilestone("g", 3)) a = true
                 return a
             },
             tooltip: "log10 => log5"
@@ -144,11 +145,17 @@ addLayer("j", {
             cost: new Decimal(200000),
             unlocked() {
                 let a = false
-                if (hasUpgrade("j", 24)) a = true
+                if (hasUpgrade("j", 31)) a = true
                 return a
             },
         }
     },
+    doReset(resettingLayer) {
+        if (tmp[resettingLayer].row <= tmp[this.layer].row) return; // no reset when same or lower row layer caused a reset
+        const keep = [];
+        if (hasMilestone("g", 2)) keep.push("upgrades")
+        layerDataReset(this.layer, keep);
+    }
 })
 
 addLayer("g", {
@@ -158,6 +165,7 @@ addLayer("g", {
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
+        seedlings: new Decimal(0),
     }},
     color: "#bba",
     branches: "j",
@@ -179,6 +187,31 @@ addLayer("g", {
         {key: "j", description: "J: Reset to form J-points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){if (hasUpgrade("j", 24)||player[this.layer].best.gte(1)) return true},
+    tabFormat:  {
+        "Milestones": {
+            content: [
+                "main-display",
+                "prestige-button",
+                ["display-text",
+                    function() { return 'You currently have ' + format(player.j.points) + ' J-points.' }],
+                "blank",
+                "milestones",
+            ],
+        },
+        "Seedlings": {
+            content: [
+                "main-display",
+                "prestige-button",
+                ["display-text",
+                    function() { return 'You currently have ' + format(player.j.points) + ' J-points.' }],
+                ["display-text",
+                    function() { return 'You currently have ' + colored(format(player.j.seedlings), this.layer) + ' Seedlings.' }],
+            ],
+            buyables: {
+
+            }
+        },
+    },
     milestones: {
         0: {
             requirementDescription: "2 Growth",
@@ -187,6 +220,12 @@ addLayer("g", {
             tooltip: "Effect: (1 + Growth) ^ 1.5",
             unlocked() {if (player[this.layer].best.gte(1)) return true}
         },
+        2: {
+            requirementDescription: "5 Growth",
+            effectDescription: "Forming J upgrades saves when doing a Growth reset.",
+            done() {return player[this.layer].points.gte(5)},
+            unlocked() {if (hasMilestone(this.layer, 1)) return true}
+        },
         1: {
             requirementDescription: "4 Growth",
             effectDescription: function() {return "This milestone boosts your J-points based on your growth starting from 4 Growth. " + "Currently: " + format(new Decimal(1).max((player.g.points.add(-2)))) + "x"},
@@ -194,14 +233,11 @@ addLayer("g", {
             tooltip: "Effect: (1 + Growth)",
             unlocked() {if (hasMilestone(this.layer, 0)) return true}
         },
-        2: {
+        3: {
             requirementDescription: "7 Growth",
             effectDescription: "Unlocks new upgrade for Forming J",
             done() {return player[this.layer].points.gte(7)},
-            unlocked() {if (hasMilestone(this.layer, 1)) return true}
+            unlocked() {if (hasMilestone(this.layer, 2)) return true}
         }
-    },
-    upgrades: {
-
     },
 })
