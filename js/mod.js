@@ -26,7 +26,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- A new row aswell as a new layer.<br>
 		- A reset layer: Growth.<br>
 		> Contains 3 milestones.<br>
-		- New upgrades for Forming J.
+		- New upgrades for Forming J.<br>
 	<h3>vα0.2.1: Seedling: Part 1.5</h3><br>
 		- New Milestone in Growth.
 		- Bug Fixes.
@@ -78,15 +78,14 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		let text = "Current endgame: Bought the "
-		let text2 = colored("Current Endgame? ", "#fff")
-		return text + text2 + "upgrade."
+		let text = "Current endgame: "
+		return text + colored("10,000 Seedlings", "#fff")
 	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.g.seedlings.gte(10000)
 }
 
 
