@@ -13,8 +13,8 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "Alpha 0.2.1",
-	name: "Seedling: Part 1.5",
+	num: "Alpha 0.2.2",
+	name: "Seedling: Part 2",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
@@ -28,8 +28,12 @@ let changelog = `<h1>Changelog:</h1><br>
 		> Contains 3 milestones.<br>
 		- New upgrades for Forming J.<br>
 	<h3>vα0.2.1: Seedling: Part 1.5</h3><br>
-		- New Milestone in Growth.
-		- Bug Fixes.
+		- New Milestone in Growth.<br>
+		- Bug Fixes.<br>
+	<h3>vα0.2.2: Seedling: Part 2</h3><br>
+		- New subcurrency in Growth layer.<br>
+		- Balancing changes.<br>
+		- Fixed hotkeys not working. (It happens to be some conflict because i forgot to change the character.)
 		`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
