@@ -185,7 +185,7 @@ addLayer("g", {
     exponent: 0.8, // Prestige currency exponent
     base: function() {
         if (player[this.layer].points.gte(10)) return 10
-        else 2
+        else return 2
     },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
