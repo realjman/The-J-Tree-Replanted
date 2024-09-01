@@ -1,6 +1,6 @@
 let modInfo = {
 	name: "The J Tree: Replanted",
-	id: "tjtr",
+	id: "tjtrr",
 	author: "realjman",
 	pointsName: "J-fragments",
 	modFiles: ["layers/j.js", "layers/a.js", "layers/g.js", "tree.js"],
