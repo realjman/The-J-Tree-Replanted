@@ -1,0 +1,48 @@
+@-webkit-keyframes masked-animation {
+	0% { background-position: 0 0;} 
+	00% {background-position: -8000px -3000px;}
+  }
+
+.growth {
+  text-align: center;
+	color: #000;
+	max-width: 700px;
+	background: rgba(255,253,160,1);
+	background: -webkit-linear-gradient( left, #618968 0%, #729A79 25%, #1ea835 50%, #618968 100% ) repeat;
+	border-color: -webkit-linear-gradient( left, #618968 0%, #729A79 25%, #1ea835 50%, #618968 100%  ) repeat;
+  text-shadow: 0px 0px 10px -webkit-linear-gradient( left, #618968 0%, #729A79 25%, #1ea835 50%, #618968 100%  ) repeat;
+	-webkit-background-clip: text;
+	-ms-background-clip: text;
+	-moz-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	-ms-text-fill-color: transparent;
+	-moz-text-fill-color: transparent;
+	text-fill-color: transparent;
+	-webkit-animation-name: masked-animation;
+	-webkit-animation-duration: 200s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+}
+
+.hugeUpdTitle {
+  text-align: center;
+	color: #000;
+	max-width: 700px;
+	background: rgba(255,253,160,1);
+	background: -webkit-linear-gradient( left, #d5c42a 0%, #98b32b 25%, #41b21e 50%, #1fa11d 100% ) repeat;
+	border-color: -webkit-linear-gradient( left, #d5c42a 0%, #98b32b 25%, #41b21e 50%, #1da13e 100% ) repeat;
+  text-shadow: 0px 0px 10px -webkit-linear-gradient( left, #d5c42a 0%, #98b32b 25%, #41b21e 50%, #1da13e 100% ) repeat;
+	-webkit-background-clip: text;
+	-ms-background-clip: text;
+	-moz-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	-ms-text-fill-color: transparent;
+	-moz-text-fill-color: transparent;
+	text-fill-color: transparent;
+	-webkit-animation-name: masked-animation;
+	-webkit-animation-duration: 150s;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: linear;
+}

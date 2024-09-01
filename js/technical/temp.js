@@ -25,6 +25,7 @@ var traversableClasses = []
 function setupTemp() {
 	tmp = {}
 	tmp.pointGen = {}
+	tmp.basePointGen = {}
 	tmp.backgroundStyle = {}
 	tmp.displayThings = []
 	tmp.scrolled = 0
@@ -111,6 +112,7 @@ function updateTemp() {
 	}
 
 	tmp.pointGen = getPointGen()
+	tmp.basePointGen = getBasePointGen()
 	tmp.backgroundStyle = readData(backgroundStyle)
 
 	tmp.displayThings = []

@@ -109,3 +109,24 @@ function invertOOM(x){
 
     return x
 }
+
+function formatAdd(x) {
+    return `+${format(x)}`
+}
+
+function formatX(x) {
+    return `${format(x)}x`
+} 
+
+function formatPercents(x) {
+    x = E(x)
+    return `${format(x.mul(100))}%`
+} 
+
+function formatDiv(x) {
+    return `/${format(x)}`
+}
+
+function formatPow(x) {
+    return `^${format(x)}`
+} 

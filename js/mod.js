@@ -3,37 +3,28 @@ let modInfo = {
 	id: "tjtr",
 	author: "realjman",
 	pointsName: "J-fragments",
-	modFiles: ["layers.js", "tree.js"],
+	modFiles: ["layers/j.js", "layers/a.js", "layers/g.js", "tree.js"],
 
 	discordName: "@rjman",
 	discordLink: "",
-	initialStartPoints: new Decimal (1), // Used for hard resets and new players
+	initialStartPoints: new Decimal(1), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "Alpha 0.2.2",
-	name: "Seedling: Part 2",
+	num: "0.0.1",
+	name: "Full Rewrite",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>vα0.1: Tree Replanting</h3><br>
-		- The existence of this tree.<br>
-		- A reset layer: Forming J.<br>
-		> Contains 7 upgrades.<br>
-	<h3>vα0.2: Seedling</h3><br>
-		- A new row aswell as a new layer.<br>
-		- A reset layer: Growth.<br>
-		> Contains 3 milestones.<br>
-		- New upgrades for Forming J.<br>
-	<h3>vα0.2.1: Seedling: Part 1.5</h3><br>
-		- New Milestone in Growth.<br>
-		- Bug Fixes.<br>
-	<h3>vα0.2.2: Seedling: Part 2</h3><br>
-		- New subcurrency in Growth layer.<br>
-		- Balancing changes.<br>
-		- Fixed hotkeys not working. (It happens to be some conflict because i forgot to change the character.)
+	<h2 class='hugeUpdTitle'>v0.0.1 Full Rewrite</h2><br>
+	<h3>Main things that happened on this rewrite:</h3><br>
+	- break_eternity.js has been ported to the latest version.<br>
+	- Full on rebalancing and new mechanics for this mod.<br>
+	<h3>Main things:</h3><br>
+	- 3 layers, 1 layer is currently working in progress, enjoy this mess I suppose.<br>
+	- 15 Upgrades, 7 Milestones and 1 Buyable in total.
 		`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
@@ -48,14 +39,16 @@ function getStartPoints(){
 
 // Determines if it should show points/sec
 function canGenPoints(){
-	if (hasUpgrade("j", 11))
-		{return true}
+	if (hasUpgrade("j", 11)) return true
 }
 
 function getBasePointGen() {
-	let gain = new Decimal(0.1)
-	if (hasUpgrade("j", 23)) gain = new Decimal(0.2)
-	return gain
+	let base = new Decimal(0.1)
+	if (hasUpgrade('j', 21)) base = base.add(upgradeEffect('j', 21))
+	if (hasUpgrade('j', 24)) base = base.add(0.05)
+
+	base = base.add(tmp.a.effect)
+	return base
 }
 
 // Calculate points/sec!
@@ -63,17 +56,34 @@ function getPointGen() {
 	if(!canGenPoints())
 		return new Decimal(0)
 
-	let gain = new Decimal(0.1)
-	if (hasUpgrade("j", 23)) gain = new Decimal(0.2)
-	if (hasUpgrade("j", 12) && !hasUpgrade("j", 14)) gain = gain.times(2)
-	if (hasUpgrade("j", 13)) gain = gain.times(upgradeEffect("j", 13))
-	if (hasUpgrade("j", 14)) gain = gain.times(4)
-	if (hasUpgrade("j", 22)) gain = gain.times(upgradeEffect("j", 22))
-	if (hasMilestone("g", 0)) gain = gain.times(player.g.points.add(1).pow(1.5))
+	let base = getBasePointGen()
+	let mult = new Decimal(1)
+	let exp = new Decimal(1)
+
+	// Multipliers
+	// Upgrades
+		if (hasUpgrade('j', 12)) mult = mult.mul(upgradeEffect('j', 12))
+		if (hasUpgrade('j', 15)) mult = mult.mul(2)
+		if (hasUpgrade('j', 33)) mult = mult.mul(upgradeEffect('j', 33))
+	
+	// Buyables
+		if (getBuyableAmount('j', 11).gte(1)) mult = mult.mul(buyableEffect('j', 11))
+
+	// Others
+		mult = mult.mul(tmp.a.APEffect1)
+
+	// Exponents
+		if (hasUpgrade('j', 32)) exp = exp.add(0.01)
+	
+	gain = base.mul(mult)
+	if (gain.gte(1)) gain = gain.pow(exp)
 	return gain
 }
 
+function color(text, color, tag='h3') { return `<${tag} style='color:${color};'>${text}</${tag}>` }
 function colored(text, color, tag='h3') { return `<${tag} style='color:${color};text-shadow:${color} 0px 0px 10px;'>${text}</${tag}>` }
+function superscript(text, color='#fff') {return `<sup style='color:${color}'>${text}</sup>`}
+function subscript(text, color='#fff') {return `<sub style='color:${color}'>${text}</sub>`}
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {
@@ -82,14 +92,13 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		let text = "Current endgame: "
-		return text + colored("10,000 Seedlings", "#fff")
+		return `Current Endgame: <h3 class='growth'>Reach Growth</h3>`
 	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.g.seedlings.gte(10000)
+	return player.g.unlocked
 }
 
 
@@ -109,7 +118,5 @@ function maxTickLength() {
 // Use this if you need to undo inflation from an older version. If the version is older than the version that fixed the issue,
 // you can cap their current resources with this.
 function fixOldSave(oldVersion){
-	if (oldVersion === "Alpha 0.2.1" && (player.g.points.gte(10))) {
-		player.g.points = new Decimal(10)
-	}
+	
 }

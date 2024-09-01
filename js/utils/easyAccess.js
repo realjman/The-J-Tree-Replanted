@@ -54,6 +54,10 @@ function upgradeEffect(layer, id) {
 	return (tmp[layer].upgrades[id].effect)
 }
 
+function milestoneEffect(layer, id) {
+	return (tmp[layer].milestones[id].effect)
+}
+
 function challengeEffect(layer, id) {
 	return (tmp[layer].challenges[id].rewardEffect)
 }
@@ -73,3 +77,4 @@ function achievementEffect(layer, id) {
 function gridEffect(layer, id) {
 	return (gridRun(layer, 'getEffect', player[layer].grid[id], id))
 }
+
