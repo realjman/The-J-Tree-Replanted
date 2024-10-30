@@ -18,5 +18,5 @@ addLayer('meta', {
     row: 2,
     branches: ['a', 'g'],
     effectDescription: () => `this is a placeholder layer, will be removed next update.`,
-    unlocked() {return hasUpgrade('g', 35)},
+    layerShown() {return hasUpgrade('g', 35)},
 })
