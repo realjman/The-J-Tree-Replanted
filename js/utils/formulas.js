@@ -1,3 +1,5 @@
+Decimal.prototype.clone = function() {return this}
+
 function E(x) {return new Decimal(x)}
 
 function simpleCost(x,type,...arg) {
@@ -34,6 +36,22 @@ function scale(x, s, p, type, inv=false) {
   }
 }
 
+Decimal.prototype.scale = function(s, p, type, inv=false) {
+  var x = this.clone()
+  return scale(x, s, p, type, inv)
+}
+
+Decimal.prototype.softcap = function(start, power, mode, dis=false) {
+  var x = this.clone()
+  if (!dis&&x.gte(start)) {
+    if ([0, "pow"].includes(mode)) x = x.div(start).max(1).pow(power).mul(start)
+    if ([1, "mul"].includes(mode)) x = x.sub(start).div(power).add(start)
+    if ([2, "exp"].includes(mode)) x = expPow(x.div(start), power).mul(start)
+    if ([3, "log"].includes(mode)) x = x.div(start).log(power).add(1).mul(start)
+  }
+  return x
+}
+
 function writeScaled(x, s) {
   if (Decimal.lte(x, s)) return ""
   return color("(Scaled)", "#900")
@@ -55,4 +73,18 @@ function writeScale(x, s, p, type) {
 
 function writeLocked(amount, str) {
   return `[UNLOCKS AT ${format(amount)} ${str.toUpperCase()}]`
+}
+
+function writeStringCondition(str1, str2, condition) {
+  if (condition) return str1
+  return str2
+}
+
+function writeLog(base, eqn) {
+  return `log${subscript(base)}(${eqn})`
+}
+
+function writeExp(exp, eqn, brackets = false) {
+  if (brackets) return `(${eqn})${superscript(exp)}`
+  return `${eqn}${superscript(exp)}`
 }

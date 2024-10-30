@@ -3,14 +3,14 @@
 	00% {background-position: -8000px -3000px;}
   }
 
-.growth {
+.met {
   text-align: center;
 	color: #000;
 	max-width: 700px;
 	background: rgba(255,253,160,1);
-	background: -webkit-linear-gradient( left, #618968 0%, #729A79 25%, #1ea835 50%, #618968 100% ) repeat;
-	border-color: -webkit-linear-gradient( left, #618968 0%, #729A79 25%, #1ea835 50%, #618968 100%  ) repeat;
-  text-shadow: 0px 0px 10px -webkit-linear-gradient( left, #618968 0%, #729A79 25%, #1ea835 50%, #618968 100%  ) repeat;
+	background: -webkit-linear-gradient( left, #dfdfdf 0%, #a3a3a3 25%, #757575 50%, #494949 100% ) repeat;
+	border-color: -webkit-linear-gradient( left, #dfdfdf 0%, #a3a3a3 25%, #757575 50%, #494949 100% ) repeat;
+  text-shadow: 0px 0px 10px -webkit-linear-gradient( left, #dfdfdf 0%, #a3a3a3 25%, #757575 50%, #494949 100% ) repeat;
 	-webkit-background-clip: text;
 	-ms-background-clip: text;
 	-moz-background-clip: text;
@@ -45,4 +45,41 @@
 	-webkit-animation-duration: 150s;
 	-webkit-animation-iteration-count: infinite;
 	-webkit-animation-timing-function: linear;
+}
+
+#loadingSection {
+	z-index: 1000000;
+	background-color: #003f00;
+}
+
+#app {
+	opacity: 0;
+	animation: appZoom 1s forwards .2s;
+}
+
+.author {
+	text-shadow: 0px 0px 10px #009900;
+	color: #009900;
+}
+
+.author:hover {
+	text-shadow: 0px 0px 20px #00aa00;
+	cursor: pointer;
+	color: #00aa00;
+}
+
+@font-face {
+	font-family: "Roboto";
+	src: url("/Roboto-Medium.woff");
+}
+
+@keyframes appZoom {
+	0% {
+		scale: 0.9;
+		opacity: 0;
+	}
+	100% {
+		scale: 1;
+		opacity: 1;
+	}
 }

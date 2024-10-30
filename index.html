@@ -6,19 +6,11 @@
 	<meta property="og:url" content="https://realjman.github.io/The-J-Tree-Replanted" />
 	<meta property="og:description" content="The J Tree Rewritten/Replanted made by j man (@rjman)" />
 
-	<link rel="stylesheet" type="text/css" href="css/system-style.css" />
-	<link rel="stylesheet" type="text/css" href="css/bars.css" />
-	<link rel="stylesheet" type="text/css" href="css/components.css" />
-	<link rel="stylesheet" type="text/css" href="css/general-style.css" />
-	<link rel="stylesheet" type="text/css" href="css/misc.css" />
-	<link rel="stylesheet" type="text/css" href="css/other-tabs.css" />
-	<link rel="stylesheet" type="text/css" href="css/popup.css" />
-	<link rel="stylesheet" type="text/css" href="css/tree-node.css" />
-	<link rel="stylesheet" type="text/css" href="css/others.css" />
+	<link rel="stylesheet" type="text/css" href="assets/css/global.css"/>
 
 	<link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
 
-	<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+	<script src="https://unpkg.com/vue@2.7.16/dist/vue.min.js"></script>
 	<script src="js/technical/break_eternity.js"></script>
 	<script src="js/technical/layerSupport.js"></script>
 
@@ -41,6 +33,7 @@
 	<script src="js/utils/save.js"></script>
 	<script src="js/utils/themes.js"></script>
 
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 </head>
 
 
@@ -77,26 +70,10 @@
 			col: (player.tab !== 'none' && player.navTab !== 'none'), 
 			left: (player.tab !== 'none' && player.navTab !== 'none')}"
 			 :style="{'margin-top': !readData(layoutInfo.showTree) && player.tab == 'info-tab' ? '50px' : ''}">
-			<div id="version" onclick="showTab('changelog-tab')" class="overlayThing" style="margin-right: 13px" >
-				{{VERSION.withoutName}}</div>
+			<div id="version" onclick="showTab('changelog-tab')" class="overlayThing" style="margin-left: 10px" >
+				{{VERSION.withName}}</div>
 			<button
 			v-if="((player.navTab == 'none' && (tmp[player.tab].row == 'side' || tmp[player.tab].row == 'otherside' || player[player.tab].prevTab)) || player[player.navTab]?.prevTab)"				class="other-back overlayThing" onclick="goBack(player.navTab == 'none' ? player.tab : player.navTab)">←</button>
-			<img id="optionWheel" class="overlayThing" v-if="player.tab!='options-tab'" src="options_wheel.png"
-				onclick="showTab('options-tab')"></img>
-			<div id="info" v-if="player.tab!='info-tab'" class="overlayThing" onclick="showTab('info-tab')"><br>i</div>
-			<div id="discord" class="overlayThing">
-				<img onclick="window.open((modInfo.discordLink ? modInfo.discordLink : 'https://discord.gg/F3xveHV'),'mywindow')"
-					src="discord.png" target="_blank"></img>
-				<ul id="discord-links">
-					<li v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink"
-							target="_blank">{{modInfo.discordName}}</a><br></li>
-					<li><a class="link" href="https://discord.gg/F3xveHV" target="_blank"
-							v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree
-							Discord</a><br></li>
-					<li><a class="link" href="http://discord.gg/wwQfgPa" target="_blank"
-							v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a></li>
-				</ul>
-			</div>
 			<overlay-head v-if="!(tmp.gameEnded && !player.keepGoing)"></overlay-head>
 			<div class="sideLayers">
 				<div v-for="(node, index) in OTHER_LAYERS['side']">
@@ -141,5 +118,11 @@
 		</div>
 		<div class = "bg2" v-bind:style = "tmp.backgroundStyle"></div>
 
+		<div class="hoverBox">
+			<img id="optionWheel" src="/assets/img/options.png" onclick="showTab('options-tab')"></img>
+			<img id="info" src="/assets/img/info.png" onclick="showTab('info-tab')"></img>
+			<img id="credits" src="/assets/img/credits.png" onclick="showTab('credits-tab')"></img>
+			<img id="discord" src="/assets/img/discord.png" onclick="window.open((modInfo.discordLink))"></img>
+		</div>
 	</div>
 </body>

@@ -1,0 +1,75 @@
+.credits-tab {
+    display: flex;
+	flex-direction: column;
+	width: 100%;
+	margin: 0;
+}
+
+.credit-box {
+	min-height: 60px;
+	width: 30rem;
+	border-radius: 3px;
+	border: 4px solid;
+	background-color: #8d8;
+	border-color: rgba(0, 0, 0, 0.125);
+	color: rgba(0, 0, 0, 0.5);
+	margin-bottom: 2px;
+	margin-top: 2px;
+	display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px;
+}
+
+.credit-box .key-desc {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto;
+    font-family: inherit;
+}
+
+.credit-box .key-desc .key {
+    font-size: 22px;
+    color: rgba(0, 0, 0, 0.7);
+    text-align: center;
+    font-family: inherit;
+}
+
+.credit-box .key-desc .desc {
+    text-align: center;
+    color: rgba(0, 0, 0, 0.5);
+    font-family: inherit;
+}
+
+.credit-box .key-desc .desc .link-credits {
+    font-size: 21px;
+    text-align: center;
+    color: rgba(0, 80, 0, 0.5);
+    font-family: inherit;
+}
+
+.credit-box .key-desc .desc .link-credits:hover {
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.yellow {
+	display: block;
+	font-size: 20px;
+	color: #ee4;
+	cursor: pointer;
+	font-family: "Lucida Console", "Courier New", monospace;
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: #ee4;
+	text-decoration: none;
+}
+
+.yellow:hover {
+	color: #dd6;
+	transform: scale(1.2, 1.2);
+	text-shadow: 5px 0 10px #dd6,
+              -3px 0 12px #dd6;
+	-webkit-text-stroke-width: 1px;
+	-webkit-text-stroke-color: #dd6;
+}

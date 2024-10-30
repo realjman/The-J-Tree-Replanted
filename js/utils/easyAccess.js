@@ -78,3 +78,7 @@ function gridEffect(layer, id) {
 	return (gridRun(layer, 'getEffect', player[layer].grid[id], id))
 }
 
+
+function showUpgInTF(id) {
+	return ['upgrade', id]
+}

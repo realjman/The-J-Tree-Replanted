@@ -110,23 +110,23 @@ function invertOOM(x){
     return x
 }
 
-function formatAdd(x) {
-    return `+${format(x)}`
+function formatAdd(x, perc) {
+    return `+${format(x, perc)}`
 }
 
-function formatX(x) {
-    return `${format(x)}x`
+function formatX(x, perc) {
+    return `${format(x, perc)}x`
 } 
 
-function formatPercents(x) {
+function formatPercents(x, perc) {
     x = E(x)
-    return `${format(x.mul(100))}%`
+    return `${format(x.mul(100), perc)}%`
 } 
 
-function formatDiv(x) {
-    return `/${format(x)}`
+function formatDiv(x, perc) {
+    return `/${format(x, perc)}`
 }
 
-function formatPow(x) {
-    return `^${format(x)}`
+function formatPow(x, perc) {
+    return `^${format(x, perc)}`
 } 

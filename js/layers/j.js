@@ -23,10 +23,14 @@ addLayer("j", {
         if (hasMilestone('a', 1)) mult = mult.mul(milestoneEffect('a', 1))
 
         mult = mult.mul(tmp.a.APEffect4)
+        mult = mult.mul(tmp.g.plantEffect2)
+
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
-        return new Decimal(1)
+        exp = E(1)
+        if (hasMilestone('a', 20)) exp = exp.add(0.01)
+        return exp
     },
     passive() {
         let gen = E(0)
@@ -51,10 +55,12 @@ addLayer("j", {
             cost: new Decimal(3),
             effect() {
                 x = player[this.layer].points
-                return Decimal.pow(1.5, Decimal.log(x.add(1), 5))
+                form = new Decimal(5)
+                if (hasMilestone("a", 7)) form = form.sub(1)
+                return Decimal.pow(1.5, Decimal.log(x.add(1), form))
             },
             effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
-            tooltip: () => `Effect: 1.5${superscript("log"+subscript("5", "#fff")+"(J-points + 1)","#fff")}`,
+            tooltip: () => `Effect: 1.5${superscript("log"+subscript(writeStringCondition("4", "5", hasMilestone("a", 7)), "#fff")+"(J-points + 1)","#fff")}`,
             unlocked() {return hasUpgrade(this.layer, 11)},
         },
         13: {
@@ -63,12 +69,13 @@ addLayer("j", {
             cost: new Decimal(10),
             effect() {
                 x = player[this.layer].points
-                eff = Decimal.log(x.pow(0.3).add(1), 4).add(1)
+                if (!hasMilestone("a", 8)) eff = Decimal.log(x.pow(0.3).add(1), 4).add(1)
+                else eff = Decimal.log(x.pow(0.75).add(1), 3).add(1)
                 if (hasUpgrade(this.layer, 31)) eff = eff.mul(upgradeEffect(this.layer, 31))
                 return eff
             },
             effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
-            tooltip: () => `Effect: log${subscript("4", "#fff")}(J-points${superscript("0.3", "#fff")} + 1) + 1`,
+            tooltip: () => hasMilestone("a", 8) ? `log${subscript("3", "#fff")}(J-points${superscript("0.75", "#fff")} + 1) + 1` : `Effect: log${subscript("4", "#fff")}(J-points${superscript("0.3", "#fff")} + 1) + 1`,
             unlocked() {return hasUpgrade(this.layer, 12)},
         },
         14: {
@@ -169,7 +176,7 @@ addLayer("j", {
         },
         35: {
             title: "Empowered",
-            description: function() {return `Unlock a feature in ${color("Abstract", "#484")}. (You will keep this upgrade on Abstract)`},
+            description: function() {return `Unlock a feature in ${color("Abstract", "#484")}, this upgrade will also unlock 2 milestones. (You will keep this upgrade on Abstract)`},
             cost: new Decimal(1_000_000),
             unlocked() {return hasUpgrade(this.layer, 34)},
         },
@@ -180,16 +187,21 @@ addLayer("j", {
             effectExp() {
                 let exp = new Decimal(1)
                 if (hasUpgrade(this.layer, 22)) exp = exp.add(0.01)
+                if (hasMilestone('a', 11)) exp = exp.add(0.01)
                 return exp
             },
+            effectBase() {
+                if (hasMilestone('a', 18)) return E(2.1)
+                return E(2)
+            },
             display() {
-                return `Doubles J-fragment gain per buyable level${superscript(format(this.effectExp()), "#000")}.
+                return `Doubles J-fragment gain per buyable amount${superscript(format(this.effectExp()), "#000")}.
                 ${hasMilestone('a', 5)?"Requirement":"Cost"}: ${format(this.cost())} J-points ${writeScaled(getBuyableAmount(this.layer, this.id), this.scalingStart())}
                 Amount: ${format(getBuyableAmount(this.layer, this.id), 0)}
                 Currently: ${formatX(buyableEffect(this.layer, this.id))}
                 ${!hasUpgrade('j', 21) && getBuyableAmount(this.layer, this.id).gte(3)?"An upgrade appeared in the Upgrades tab, you should go check it out.":""}
             `},
-            cost(x) {return simpleCost(scale(x, this.scalingStart(), this.scalingPower(), "L"), "EA", 10, 2, 1.5)},
+            cost(x) {return simpleCost(x.scale(this.scalingStart(), this.scalingPower(), "L"), "EA", 10, 2, 1.5)},
             canAfford() {return player[this.layer].points.gte(this.cost())},
             buy() {
                 if (!hasMilestone('a', 5)) player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -198,17 +210,18 @@ addLayer("j", {
             buyMax() {
                 x = player[this.layer].points.add(1)
                 if (hasMilestone('a', 6) && player[this.layer].autoBuyable) {
-                    if (simpleCost(x, "EAI", 10, 2, 1.5).floor().gt(this.scalingStart())) {final = scale(simpleCost(x, "EAI", 10, 2, 1.5).floor(), this.scalingStart(), this.scalingPower(), "L", true).floor().add(1)}
-                    else {final = simpleCost(x, "EAI", 10, 2, 1.5)}
+                    if (simpleCost(x, "EAI", 10, 2, 1.5).floor().gt(this.scalingStart())) {final = simpleCost(x, "EAI", 10, 2, 1.5).scale(this.scalingStart(), this.scalingPower(), "L", true).floor().add(1)}
+                    else {final = simpleCost(x, "EAI", 10, 2, 1.5).floor().add(1)}
                     setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
                 }
             },
             effect(x) {
-                return Decimal.pow(2, x.pow(this.effectExp()))
+                return Decimal.pow(this.effectBase(), x.pow(this.effectExp()))
             },
             scalingStart() {
                 let scaling = E(10)
                 if (hasUpgrade(this.layer, 34)) scaling = scaling.add(5)
+                scaling = scaling.add(tmp.g.seedEffect)
                 return scaling
             },
             scalingPower() {
@@ -218,7 +231,7 @@ addLayer("j", {
             tooltip: function() {return `
                 Cost: 10 * (1 + 2 * x) * 1.5${superscript("x")}<br>
                 ${writeScale(getBuyableAmount(this.layer, this.id), this.scalingStart(), this.scalingPower(), "L")}
-                Effect: 2${superscript("x")}
+                Effect: ${format(this.effectBase())}${superscript("x")}
             `},
             unlocked() {return hasUpgrade("j", 14)}
         },
@@ -258,7 +271,10 @@ addLayer("j", {
         if (layers[resettingLayer].layer == "a" && hasMilestone('a', 4)) keptUpg.push(21, 22, 23, 24)
         if (layers[resettingLayer].layer == "a" && hasMilestone('a', 6)) keptUpg.push(31, 32, 33, 34)
 
-            if (layers[resettingLayer].row >= 1 && hasMilestone('a', 6) && player[this.layer].autoBuyable) keepAB = true
+        if (layers[resettingLayer].layer == "g" && hasUpgrade('g', 12)) keptUpg.push(11, 12, 13, 14, 15, 21, 22, 23, 24)
+        if (layers[resettingLayer].layer == "g" && hasUpgrade('g', 13)) keptUpg.push(31, 32, 33, 34, 35)
+
+        if (layers[resettingLayer].row >= 1 && hasMilestone('a', 6) && player[this.layer].autoBuyable) keepAB = true
 
         let keep = [keptUpg, keepAB]
 

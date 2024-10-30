@@ -3,28 +3,40 @@ let modInfo = {
 	id: "tjtrr",
 	author: "realjman",
 	pointsName: "J-fragments",
-	modFiles: ["layers/j.js", "layers/a.js", "layers/g.js", "tree.js"],
+	modFiles: ["layers/j.js", "layers/a.js", "layers/g.js", "layers/meta.js", "tree.js", "layers/miscLayers/ab.js"],
 
-	discordName: "@rjman",
-	discordLink: "",
+	discordName: "extrem j server",
+	discordLink: "https://discord.gg/UUyR82mzMG/",
 	initialStartPoints: new Decimal(1), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0.1",
-	name: "Full Rewrite",
+	num: "0.0.2",
+	name: "Grow The Plants",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h2 class='hugeUpdTitle'>v0.0.1 Full Rewrite</h2><br>
-	<h3>Main things that happened on this rewrite:</h3><br>
+	<h2 class='hugeUpdTitle'>v0.1.0 Full Rewrite</h2><br>
+	<h3 style='text-shadow: 0px 0px 10px #fff'>Main things that was changed on this rewrite:</h3><br>
 	- break_eternity.js has been ported to the latest version.<br>
 	- Full on rebalancing and new mechanics for this mod.<br>
-	<h3>Main things:</h3><br>
+	<h3 style='text-shadow: 0px 0px 10px #fff'>Main things:</h3><br>
 	- 3 layers, 1 layer is currently working in progress, enjoy this mess I suppose.<br>
-	- 15 Upgrades, 7 Milestones and 1 Buyable in total.
+	- 15 Upgrades, 7 Milestones and 1 Buyable in total.<br><br>
+	<h2 class='hugeUpdTitle'>v0.2.0 Grow The Plants</h2><br>
+	- <h3>TMT version ported to v2.7</h3><br>
+	<h3 style='text-shadow: 0px 0px 10px #fff'>Main Features:</h3><br>
+	- Implemented Growth layer.<br>
+	- 15 new upgrades.<br>
+	- 6 new buyables.<br>
+	- 14 new milestones.<br>
+	- 4 new currencies.<br>
+	<h3 style='text-shadow: 0px 0px 10px #fff'>QoL:</h3><br>
+	- Autobuyer Tab<br>
+	<h3 style='text-shadow: 0px 0px 10px #fff'>Others:</h3><br>
+	- UI placement has changed.
 		`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
@@ -71,9 +83,12 @@ function getPointGen() {
 
 	// Others
 		mult = mult.mul(tmp.a.APEffect1)
+		mult = mult.mul(tmp.g.treeEffect2)
 
 	// Exponents
 		if (hasUpgrade('j', 32)) exp = exp.add(0.01)
+		if (hasMilestone('a', 9)) exp = exp.add(0.01)
+		if (hasMilestone('a', 19)) exp = exp.add(0.02)
 	
 	gain = base.mul(mult)
 	if (gain.gte(1)) gain = gain.pow(exp)
@@ -92,13 +107,13 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: <h3 class='growth'>Reach Growth</h3>`
+		return `Current Endgame: <h3 class='met'>Reach Meta</h3> (or purchase the last upgrade in growth)`
 	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.g.unlocked
+	return hasUpgrade('g', 35)
 }
 
 

@@ -288,6 +288,11 @@ addLayer("options-tab", {
     row: "otherside"
 })
 
+addLayer("credits-tab", {
+    tabFormat: ["credits-tab"],
+    row: "otherside"
+})
+
 addLayer("changelog-tab", {
     tabFormat() {return ([["raw-html", modInfo.changelog]])},
     row: "otherside"

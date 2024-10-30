@@ -125,19 +125,20 @@ var systemComponents = {
     'info-tab': {
         template: `
         <div>
-        <h2>{{modInfo.name}}</h2>
+        <h1>{{modInfo.name}}</h1>
         <br>
         <h3>{{VERSION.withName}}</h3>
         <span v-if="modInfo.author">
             <br>
-            Made by {{modInfo.author}}	
+            <h2>Made by <span class="author" onclick="window.open('https://github.com/realjman/')">{{modInfo.author}}</span></h2>	
         </span>
         <br>
-        The Modding Tree <a v-bind:href="'https://github.com/Acamaeda/The-Modding-Tree/blob/master/changelog.md'" target="_blank" class="link" v-bind:style = "{'font-size': '14px', 'display': 'inline'}" >{{TMT_VERSION.tmtNum}}</a> by Acamaeda
+        The Modding Tree <a v-bind:href="'https://github.com/Acamaeda/The-Modding-Tree/blob/master/changelog.md'" target="_blank" class="link" v-bind:style = "{'font-size': '14px', 'display': 'inline'}" >{{TMT_VERSION.tmtNum}}</a> by Acamaeda and FlamemasterNXF
         <br>
         The Prestige Tree made by Jacorb and Aarex
 		<br><br>
 		<div class="link" onclick="showTab('changelog-tab')">Changelog</div><br>
+		<div class="yellow" onclick="showTab('credits-tab')">Credits</div><br>
         <span v-if="modInfo.discordLink"><a class="link" v-bind:href="modInfo.discordLink" target="_blank">{{modInfo.discordName}}</a><br></span>
         <a class="link" href="https://discord.gg/F3xveHV" target="_blank" v-bind:style="modInfo.discordLink ? {'font-size': '16px'} : {}">The Modding Tree Discord</a><br>
         <a class="link" href="http://discord.gg/wwQfgPa" target="_blank" v-bind:style="{'font-size': '16px'}">Main Prestige Tree server</a><br>
@@ -151,29 +152,132 @@ var systemComponents = {
 
     'options-tab': {
         template: `
-        <table>
-            <tr>
-                <td><button class="opt" onclick="save()">Save</button></td>
-                <td><button class="opt" onclick="toggleOpt('autosave')">Autosave: {{ options.autosave?"ON":"OFF" }}</button></td>
-                <td><button class="opt" onclick="hardReset()">HARD RESET</button></td>
-            </tr>
-            <tr>
-                <td><button class="opt" onclick="exportSave()">Export to clipboard</button></td>
-                <td><button class="opt" onclick="importSave()">Import</button></td>
-                <td><button class="opt" onclick="toggleOpt('offlineProd')">Offline Prod: {{ options.offlineProd?"ON":"OFF" }}</button></td>
-            </tr>
-            <tr>
-                <td><button class="opt" onclick="switchTheme()">Theme: {{ getThemeName() }}</button></td>
-                <td><button class="opt" onclick="adjustMSDisp()">Show Milestones: {{ MS_DISPLAYS[MS_SETTINGS.indexOf(options.msDisplay)]}}</button></td>
-                <td><button class="opt" onclick="toggleOpt('hqTree')">High-Quality Tree: {{ options.hqTree?"ON":"OFF" }}</button></td>
-            </tr>
-            <tr>
-                <td><button class="opt" onclick="toggleOpt('hideChallenges')">Completed Challenges: {{ options.hideChallenges?"HIDDEN":"SHOWN" }}</button></td>
-                <td><button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">Single-Tab Mode: {{ options.forceOneTab?"ALWAYS":"AUTO" }}</button></td>
-				<td><button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">Shift-Click to Toggle Tooltips: {{ options.forceTooltips?"ON":"OFF" }}</button></td>
-				</tr> 
-        </table>`
+         <div class="options-tab">
+            <button class="opt" onclick="save()">
+				<div class="key-desc">
+					<div class="key">Save</div>
+					<div class="desc">Save your game</div>
+				</div>
+				<div class="value"></div>
+			</button>
+            <button class="opt" onclick="toggleOpt('autosave')">
+				<div class="key-desc">
+					<div class="key">Autosave</div>
+					<div class="desc">Automatically save your game</div>
+				</div>
+				<div class="value">{{ options.autosave?"ON":"OFF" }}</div>
+			</button>
+            <button class="opt" onclick="hardReset()">
+				<div class="key-desc">
+					<div class="key">Hard Reset</div>
+					<div class="desc">Reset your game</div>
+				</div>
+				<div class="value"></div>
+			</button>
+            <button class="opt" onclick="exportSave()">
+				<div class="key-desc">
+					<div class="key">Export to clipboard</div>
+					<div class="desc">Copy your save to your clipboard</div>
+				</div>
+				<div class="value"></div>
+			</button>
+            <button class="opt" onclick="importSave()">
+				<div class="key-desc">
+					<div class="key">Import</div>
+					<div class="desc">Import a save from your clipboard</div>
+				</div>
+				<div class="value"></div>
+			</button>
+            <button class="opt" onclick="toggleOpt('offlineProd')">
+				<div class="key-desc">
+					<div class="key">Offline Production</div>
+					<div class="desc">Keep producing while the game is closed</div>
+				</div>
+				<div class="value">{{ options.offlineProd?"ON":"OFF" }}</div>
+			</button>
+            <button class="opt" onclick="switchTheme()">
+				<div class="key-desc">
+					<div class="key">Theme</div>
+					<div class="desc">Switch between different themes</div>
+				</div>
+				<div class="value">{{ getThemeName() }}</div>
+			</button>
+            <button class="opt" onclick="adjustMSDisp()">
+				<div class="key-desc">
+					<div class="key">Show Milestones</div>
+					<div class="desc">Show or hide milestones</div>
+				</div>
+				<div class="value">{{ MS_DISPLAYS[MS_SETTINGS.indexOf(options.msDisplay)]}}</div>
+			</button>
+			<button class="opt" onclick="toggleOpt('hideMilestonePopups')">
+				<div class="key-desc">
+					<div class="key">Hides Milestone Popups</div>
+					<div class="desc">Show or hides milestone popups everywhere</div>
+				</div>
+				<div class="value">{{ formatOption(!options.hideMilestonePopups) }}</div>
+			</button>
+            <button class="opt" onclick="toggleOpt('hideChallenges')">
+				<div class="key-desc">
+					<div class="key">Completed Challenges</div>
+					<div class="desc">Show or hide completed challenges</div>
+				</div>
+				<div class="value">{{ options.hideChallenges?"HIDDEN":"SHOWN" }}</div>
+			</button>
+            <button class="opt" onclick="toggleOpt('forceOneTab'); needsCanvasUpdate = true">
+				<div class="key-desc">
+					<div class="key">Single-Tab Mode</div>
+					<div class="desc">Force the game to only show one tab at a time</div>
+				</div>
+				<div class="value">{{ options.forceOneTab?"ALWAYS":"AUTO" }}</div>
+			</button>
+			<button class="opt" onclick="toggleOpt('forceTooltips'); needsCanvasUpdate = true">
+				<div class="key-desc">
+					<div class="key">Shift-Click to Toggle Tooltips</div>
+					<div class="desc">Toggle tooltips on or off with shift-clicking</div>
+				</div>
+				<div class="value">{{ options.forceTooltips?"ON":"OFF" }}</div>
+			</button>
+        </div>`
     },
+
+	'credits-tab': {
+		template: `
+		<div class="credits-tab">
+			<div class="credit-box">
+				<div class="key-desc">
+					<div class="key">The One and Only Developer for this mod</div>
+					<div class="desc"><span class="link-credits" onclick="window.open('https://realjman.github.io')">realjman</span> (@rjman on discord)</div>
+				</div>
+			</div>
+			<div class="credit-box">
+				<div class="key-desc">
+					<div class="key">Assets and (part of the) modified UI</div>
+					<div class="desc"><span class="link-credits" onclick="window.open('https://thecamelliatree.github.io/The-Camellia-Tree-Rewritten/')">The Camellia Tree</span> by <span class="link-credits" onclick="window.open('https://github.com/TheCamelliaTree/The-Camellia-Tree-Rewritten')">Flustix</span></div>
+				</div>
+			</div>
+			<div class="credit-box">
+				<div class="key-desc">
+					<div class="key">The Modding Tree / Prestige Tree</div>
+					<div class="desc"><span class="link-credits" onclick="window.open('https://github.com/Acamaeda/The-Modding-Tree/tree/master')">The Modding Tree</span> by <span class="link-credits" onclick="window.open('https://github.com/Acamaeda')">Acamaeda</span> and <span class="link-credits" onclick="window.open('https://github.com/FlamemasterNXF')">FlamemasterNXF</span></div>
+					<div class="desc"><span class="link-credits" onclick="window.open('https://jacorb90.me/Prestige-Tree/')">The Prestige Tree</span> by <span class="link-credits" onclick="window.open('https://jacorb90.me/')">Jacorb</span></div>
+				</div>
+			</div>
+			<div class="credit-box">
+				<div class="key-desc">
+					<div class="key">Games that aspired me to make/mod games</div>
+					<div class="desc"><span class="link-credits" onclick="window.open('https://www.roblox.com/games/9292879820/')">Grass Cutting Incremental</span> by <span class="link-credits" onclick="window.open('https://www.roblox.com/users/5394695/profile')">Lethal Dolphin</span></div>
+					<div class="desc"><span class="link-credits" onclick="window.open('https://mrredshark77.github.io/incremental-mass-rewritten/')">Incremental Mass Rewritten</span> by <span class="link-credits" onclick="window.open('https://mrredshark77.github.io/')">MrRedShark77</span></div>
+					<div class="desc"><span class="link-credits" onclick="window.open('https://ivark.github.io/')">Antimatter Dimensions</span> by <span class="link-credits" onclick="window.open('https://github.com/ivark/')">Hevipelle</span></div>
+				</div>
+			</div>
+			<div class="credit-box">
+				<div class="key-desc">
+					<div class="key">And most importantly...</div>
+					<div class="desc">You! For playing the game!</div>
+				</div>
+			</div>
+		</div>`
+	},
 
     'back-button': {
         template: `
@@ -200,7 +304,7 @@ var systemComponents = {
 	'particle': {
 		props: ['data', 'index'],
 		template: `<div><div class='particle instant' v-bind:style="[constructParticleStyle(data), data.style]" 
-			v-on:click="run(data.onClick, data)"  v-on:mouseenter="run(data.onMouseOver, data)" v-on:mouseleave="run(data.onMouseLeave, data)" ><span v-html="data.text"></span>
+			v-on:click="run(data.onClick, data)"  v-on:mouseenter="run(data.onMouseEnter, data)" v-on:mouseleave="run(data.onMouseLeave, data)" ><span v-html="data.text"></span>
 		</div>
 		<svg version="2" v-if="data.color">
 		<mask v-bind:id="'pmask' + data.id">
