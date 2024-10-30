@@ -70,7 +70,7 @@
 
 @font-face {
 	font-family: "Roboto";
-	src: url("/Roboto-Medium.woff");
+	src: url("assets/Roboto-Medium.woff");
 }
 
 @keyframes appZoom {
