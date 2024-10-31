@@ -264,6 +264,12 @@ var systemComponents = {
 			</div>
 			<div class="credit-box">
 				<div class="key-desc">
+					<div class="key">Playtesters</div>
+					<div class="desc">@welpedruide</div>
+				</div>
+			</div>
+			<div class="credit-box">
+				<div class="key-desc">
 					<div class="key">Games that aspired me to make/mod games</div>
 					<div class="desc"><span class="link-credits" onclick="window.open('https://www.roblox.com/games/9292879820/')">Grass Cutting Incremental</span> by <span class="link-credits" onclick="window.open('https://www.roblox.com/users/5394695/profile')">Lethal Dolphin</span></div>
 					<div class="desc"><span class="link-credits" onclick="window.open('https://mrredshark77.github.io/incremental-mass-rewritten/')">Incremental Mass Rewritten</span> by <span class="link-credits" onclick="window.open('https://mrredshark77.github.io/')">MrRedShark77</span></div>
