@@ -261,7 +261,7 @@ addLayer('g', {
         return Decimal.log(x.add(1), 10).div(10).add(1)
       },
       effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
-      cost: E(5000),
+      cost: E(3000),
       currencyDisplayName: "Sprouts",
       canAfford() {return player[this.layer].sprouts.gte(this.cost)},
       pay() {player[this.layer].sprouts = player[this.layer].sprouts.sub(this.cost)},

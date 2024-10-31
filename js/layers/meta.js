@@ -19,4 +19,10 @@ addLayer('meta', {
     branches: ['a', 'g'],
     effectDescription: () => `this is a placeholder layer, will be removed next update.`,
     layerShown() {return hasUpgrade('g', 35)},
+    tabFormat: [
+        "main-display",
+        "prestige-button",
+        "resource-display",
+        ["display-text", () => `${!player.meta.points.eq(0)?"bro what are you doing":""}`]
+    ],
 })
