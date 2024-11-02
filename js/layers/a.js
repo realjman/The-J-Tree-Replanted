@@ -127,7 +127,7 @@ addLayer("a", {
           ${player.j.points.gte(1.5e8)||hasUpgrade("g", 11)?"Third Effect: "+formatX(tmp.a.APEffect3)+" to Abstract Power gain.":writeLocked(1.5e8, "J-points")}<br>
           ${x.gte(3000)?"Fourth Effect: "+formatX(tmp.a.APEffect4)+" to J-points gain.":writeLocked(3000, "abstract power")}<br>
           ${hasMilestone('a', 8)?"Fifth Effect: "+formatX(tmp.a.APEffect5)+" to Growth gain.":""}<br>
-          ${hasMilestone('a', 14)?"Fifth Effect: "+formatX(tmp.a.APEffect6)+" to Seeds gain.":""}<br>
+          ${hasMilestone('a', 14)?"Sixth Effect: "+formatX(tmp.a.APEffect6)+" to Seeds gain.":""}<br>
           `
         }],
         "blank",
@@ -140,7 +140,7 @@ addLayer("a", {
           ${player.j.points.gte(1.5e8)||hasUpgrade("g", 11)?"Third Effect: 1 + log"+subscript("5")+"(AP + 1) / 4":writeLocked(1.5e8, "J-points")}<br>
           ${x.gte(3000)?"Fourth Effect: 1 + AP"+superscript(format(1/3))+" / 5":writeLocked(3000, "abstract power")}<br>
           ${hasMilestone('a', 8)?"Fifth Effect: 1 + log"+subscript("10")+"(AP + 1) / 6":""}<br>
-          ${hasMilestone('a', 8)?"Fifth Effect: 1 + log"+subscript("10")+"(AP + 1) / 5":""}<br>
+          ${hasMilestone('a', 8)?"Sixth Effect: 1 + log"+subscript("10")+"(AP + 1) / 5":""}<br>
           `
         }],
       ],
@@ -256,7 +256,7 @@ addLayer("a", {
         if (hasMilestone('a', 19)) return Decimal.pow(1.6, (x.sub(9))).max(1)
         return Decimal.pow(1.5, (x.sub(9))).max(1)
       },
-      tooltip: () => `Effect: max(1, 1.5${superscript("Abstracts - 9")})`,
+      tooltip: () => `Effect: max(1, ${hasMilestone(this.layer, 19)?"1.6":"1.5"}${superscript("Abstracts - 9")})`,
       unlocked() {return hasMilestone(this.layer, 8)},
     },
     11: {
