@@ -37,7 +37,7 @@ addLayer('g', {
     
     if (hasUpgrade(this.layer, 22)) gain = gain.mul(upgradeEffect(this.layer, 22))
 
-    if (hasMilestone(this.layer, 10)) gain = gain.mul(milestoneEffect(this.layer, 10))
+    if (hasMilestone('a', 10)) gain = gain.mul(milestoneEffect('a', 10))
 
     gain = gain.mul(tmp.g.plantEffect1)
     gain = gain.mul(tmp.a.APEffect6)
