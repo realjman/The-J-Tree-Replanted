@@ -108,13 +108,13 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: <h3 class='met'>Reach Meta</h3> (or purchase the last upgrade in growth)`
+		return `Current Endgame: Ignore this, you are a goober`
 	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return hasUpgrade('g', 35)
+	return false
 }
 
 
