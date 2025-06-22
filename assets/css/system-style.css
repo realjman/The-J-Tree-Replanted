@@ -249,3 +249,9 @@ button > * {
 	--background: transparent !important;
 }
 
+.display-boxes {
+    display: flex !important;
+	flex-direction: column;
+	width: 100%;
+	margin: 0;
+}

@@ -1,6 +1,12 @@
 Decimal.prototype.clone = function() {return this}
 
+const DARK = "#000"
+const LIGHT = "#fff"
+
 function E(x) {return new Decimal(x)}
+
+function expPow(a,b) { return Decimal.pow(10,Decimal.max(a,1).log10().add(1).pow(b).sub(1)) }
+function revExpPow(a,b) { return Decimal.pow(10,Decimal.max(a,1).log10().add(1).root(b).sub(1)) }
 
 function simpleCost(x,type,...arg) {
   x = E(x)
@@ -57,6 +63,11 @@ function writeScaled(x, s) {
   return color("(Scaled)", "#900")
 }
 
+function writeSC(x, s) {
+  if (Decimal.lte(x, s)) return ""
+  return color("(Softcapped)", "#900")
+}
+
 function writeScale(x, s, p, type) {
   x = E(x)
   if (Decimal.lte(x, s)) return ""
@@ -71,6 +82,21 @@ function writeScale(x, s, p, type) {
   }
 }
 
+function writeSCForm(x, s, p, type, dis=false) {
+  x = E(x)
+  if (Decimal.lte(x, s)||dis) return ""
+
+  let text = `Softcap starts at ${format(s)}, Softcap formula: x = `
+
+  if (x.gte(s)) {
+    if ([0, "pow"].includes(type)) text += `max(x / ${format(s)}, 1)${superscript(format(p))} * ${format(s)}`// x = x.div(start).max(1).pow(power).mul(start)
+    if ([1, "mul"].includes(type)) text += `(x - ${format(s)}) / ${format(p)} + ${format(s)}` // x = x.sub(start).div(power).add(start)
+    if ([2, "exp"].includes(type)) text += `10${superscript('log'+subscript('10')+'(max('+'x / '+format(s)+', 1) + 1)'+superscript(format(p))+' - 1')} * ${format(s)}`// x = expPow(x.div(start), power).mul(start) // Decimal.pow(10,Decimal.max(a,1).log10().add(1).pow(b).sub(1)) - expPow
+    if ([3, "log"].includes(type)) text += `(log${subscript(format(p))}(x / ${format(s)}) + 1) * ${format(s)}`// x = x.div(start).log(power).add(1).mul(start)
+  }
+  return text
+}
+
 function writeLocked(amount, str) {
   return `[UNLOCKS AT ${format(amount)} ${str.toUpperCase()}]`
 }
@@ -80,11 +106,29 @@ function writeStringCondition(str1, str2, condition) {
   return str2
 }
 
-function writeLog(base, eqn) {
-  return `log${subscript(base)}(${eqn})`
+function writeLog(base, eqn, logColor) {
+  return `log${subscript(base, logColor)}(${eqn})`
 }
 
-function writeExp(exp, eqn, brackets = false) {
-  if (brackets) return `(${eqn})${superscript(exp)}`
-  return `${eqn}${superscript(exp)}`
+function writeExp(exp, eqn, expColor, brackets = false) {
+  if (brackets) return `(${eqn})${superscript(exp, expColor)}`
+  return `${eqn}${superscript(exp, expColor)}`
+}
+
+function writeRoot(rt, eqn, brackets = false) {
+  if (brackets) return `${rt}√(${eqn})`
+  return `${rt}√${eqn}`
+}
+
+function rollDice(max) {
+  return Decimal.floor(Decimal.mul(Math.random(), max).add(1)).clamp(1, max)
+}
+
+function writeGainPS(gain, time) {
+  let gainPS = Decimal.div(gain, time)
+  let text = `<br>`
+  if (gainPS.lte(1/60)) text += `${format(gainPS.mul(3600))}/hr`
+  else if (gainPS.lte(1)) text += `${format(gainPS.mul(60))}/min`
+  else text += `${format(gainPS)}/s`
+  return text
 }

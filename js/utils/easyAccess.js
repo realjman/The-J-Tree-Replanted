@@ -82,3 +82,7 @@ function gridEffect(layer, id) {
 function showUpgInTF(id) {
 	return ['upgrade', id]
 }
+
+function showBuyableInTF(id) {
+	return ['buyable', id]
+}

@@ -3,7 +3,7 @@ let modInfo = {
 	id: "tjtrr",
 	author: "realjman",
 	pointsName: "J-fragments",
-	modFiles: ["layers/j.js", "layers/a.js", "layers/g.js", "layers/meta.js", "tree.js", "layers/miscLayers/ab.js"],
+	modFiles: ["layers/j.js", "layers/a.js", "layers/g.js", "layers/t.js", "layers/d.js", "layers/s.js", "tree.js", "layers/miscLayers/ab.js", "layers/miscLayers/stats.js"],
 
 	discordName: "extrem j server",
 	discordLink: "https://discord.gg/UUyR82mzMG/",
@@ -84,6 +84,7 @@ function getPointGen() {
 	// Others
 		mult = mult.mul(tmp.a.APEffect1)
 		mult = mult.mul(tmp.g.treeEffect2)
+		mult = mult.mul(tmp.d.diceEffect2)
 
 	// Exponents
 		if (hasUpgrade('j', 32)) exp = exp.add(0.01)
@@ -97,8 +98,8 @@ function getPointGen() {
 
 function color(text, color, tag='h3') { return `<${tag} style='color:${color};'>${text}</${tag}>` }
 function colored(text, color, tag='h3') { return `<${tag} style='color:${color};text-shadow:${color} 0px 0px 10px;'>${text}</${tag}>` }
-function superscript(text, color='#fff') {return `<sup style='color:${color}'>${text}</sup>`}
-function subscript(text, color='#fff') {return `<sub style='color:${color}'>${text}</sub>`}
+function superscript(text, color) {return `<sup style='color:${color}'>${text}</sup>`}
+function subscript(text, color) {return `<sub style='color:${color}'>${text}</sub>`}
 
 // You can add non-layer related variables that should to into "player" and be saved here, along with default values
 function addedPlayerData() { return {

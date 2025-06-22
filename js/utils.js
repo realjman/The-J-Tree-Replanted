@@ -245,6 +245,7 @@ function layerunlocked(layer) {
 }
 
 function keepGoing() {
+	if (!confirm("Game is unbalanced beyond this point, are you sure do you want to continue?")) return;
 	player.keepGoing = true;
 	needCanvasUpdate = true;
 }

@@ -9,6 +9,7 @@ addLayer("a", {
     points: new Decimal(0),
     best: new Decimal(0),
     power: E(0),
+    resetTime: 0,
   }},
   resetDescription: "The abstractive layer contaminates all your previous progress into ",
   color: "#9ae479",
@@ -52,10 +53,11 @@ addLayer("a", {
     let mult = E(1)
 
     if (hasMilestone(this.layer, 2)) mult = mult.mul(milestoneEffect(this.layer, 2))
-      mult = mult.mul(tmp[this.layer].APEffect3)
+    mult = mult.mul(tmp[this.layer].APEffect3)
     if (hasUpgrade('g', 14)) mult = mult.mul(upgradeEffect('g', 14))
     if (getBuyableAmount('a', 12).gte(1)) mult = mult.mul(buyableEffect('a', 12))
     mult = mult.mul(tmp.g.sproutEffect)
+    mult = mult.mul(tmp.s.volumeEffect1)
 
     gain = base.mul(mult)
     return gain
@@ -75,7 +77,10 @@ addLayer("a", {
   },
   APEffect3() {
     x = player[this.layer].power
-    if (player.j.points.gte(1.5e8) || hasUpgrade('g', 11)) return Decimal.log(x.add(1), 5).div(4).add(1)
+    if (player.j.points.gte(1.5e8) || hasUpgrade('g', 11)) {
+      if (hasMilestone(this.layer, 23)) return Decimal.log(x.add(1), 3).div(2).add(1)
+      return Decimal.log(x.add(1), 5).div(4).add(1)
+    }
     return E(1)
   },
   APEffect4() {
@@ -119,30 +124,10 @@ addLayer("a", {
           You have ${colored(format(x), tmp.a.color)} Abstract Power.<br>
           You are generating ${colored(format(tmp.a.abstractPowerGen), tmp.a.color)} Abstract Power per second.<br><br>
 
-          You will gain your first effect on ${format(25)} Abstract Power, all effects are based on Abstract Power.<br><br>
-
-          ${colored("Effects:", "#fff")}<br>
-          ${x.gte(25)?"First Effect: "+formatX(tmp.a.APEffect1)+" to J-fragments gain.":writeLocked(25, "abstract power")}<br>
-          ${x.gte(150)?"Second Effect: "+formatDiv(tmp.a.APEffect2)+" to next Abstract requirement.":writeLocked(150, "abstract power")}<br>
-          ${player.j.points.gte(1.5e8)||hasUpgrade("g", 11)?"Third Effect: "+formatX(tmp.a.APEffect3)+" to Abstract Power gain.":writeLocked(1.5e8, "J-points")}<br>
-          ${x.gte(3000)?"Fourth Effect: "+formatX(tmp.a.APEffect4)+" to J-points gain.":writeLocked(3000, "abstract power")}<br>
-          ${hasMilestone('a', 8)?"Fifth Effect: "+formatX(tmp.a.APEffect5)+" to Growth gain.":""}<br>
-          ${hasMilestone('a', 14)?"Sixth Effect: "+formatX(tmp.a.APEffect6)+" to Seeds gain.":""}<br>
+          You will gain your first effect on ${format(25)} Abstract Power, all effects are based on Abstract Power.<br>
           `
         }],
-        "blank",
-        "blank",
-        ["display-text", function() {
-          return `
-          ${colored("Formulas:", "#FFF")}<br>
-          ${x.gte(25)?"First Effect: "+writeStringCondition("1 + log"+subscript("5")+"(AP + 1) * 2", "1 + log"+subscript("10")+"(AP + 1)", hasMilestone('a', 8)):writeLocked(25, "abstract power")}<br>
-          ${x.gte(150)?"Second Effect: (AP / 10)"+superscript("0.25")+" + 1":writeLocked(150, "abstract power")}<br>
-          ${player.j.points.gte(1.5e8)||hasUpgrade("g", 11)?"Third Effect: 1 + log"+subscript("5")+"(AP + 1) / 4":writeLocked(1.5e8, "J-points")}<br>
-          ${x.gte(3000)?"Fourth Effect: 1 + AP"+superscript(format(1/3))+" / 5":writeLocked(3000, "abstract power")}<br>
-          ${hasMilestone('a', 8)?"Fifth Effect: 1 + log"+subscript("10")+"(AP + 1) / 6":""}<br>
-          ${hasMilestone('a', 8)?"Sixth Effect: 1 + log"+subscript("10")+"(AP + 1) / 5":""}<br>
-          `
-        }],
+        "display-boxes",
       ],
       unlocked() {return hasUpgrade('j', 35)},
     },
@@ -177,7 +162,7 @@ addLayer("a", {
         if (hasMilestone(this.layer, 18)) return x.pow(0.8).add(1)
         return x.pow(0.6).add(1)
       },
-      tooltip: () => `Effect: (Abstracts${superscript(format(0.6))} + 1)`,
+      tooltip: () => `Effect: (Abstracts${superscript(format(hasMilestone('a', 18)?"0.8":"0.6"))} + 1)`,
       done() {return player[this.layer].points.gte(3)},
     },
     2: {
@@ -239,7 +224,7 @@ addLayer("a", {
         J-13 Effect: log${subscript("4", "#fff")}(J-points${superscript("0.3", "#fff")} + 1) + 1 => log${subscript("3", "#fff")}(J-points${superscript("0.75", "#fff")} + 1) + 1
       `,
       done() {return player[this.layer].points.gte(10)},
-      unlocked() {return hasMilestone(this.layer, 6)},
+      unlocked() {return hasMilestone(this.layer, 6) || hasMilestone(this.layer, 8)},
     },
     9: {
       requirementDescription: "11 Abstracts [10]",
@@ -286,7 +271,7 @@ addLayer("a", {
       requirementDescription: "20 Abstracts [15]",
       effectDescription: () => `You can now buy max Abstract and unlock a new Abstract Power effect.`,
       done() {return player[this.layer].points.gte(20)},
-      unlocked() {return hasMilestone(this.layer, 12)},
+      unlocked() {return hasMilestone(this.layer, 12) || hasMilestone(this.layer, 14)},
     },
     15: {
       requirementDescription: "22 Abstracts",
@@ -330,7 +315,28 @@ addLayer("a", {
       effectDescription: () => `${formatAdd(0.01)} to J-points exponent and second Tree effect is better.`,
       done() {return player[this.layer].points.gte(30)},
       unlocked() {return hasMilestone(this.layer, 18)},
+      tooltip: () => `x${superscript(0.4)} * 4 + 1 => x${superscript(0.8)} * 4 + 1`,
+    },
+    21: {
+      requirementDescription: "33 Abstracts",
+      effectDescription: () => `${formatAdd(1)} to ${colored('Seed Generation', '#000')} effect base.`,
+      done() {return player[this.layer].points.gte(33)},
+      unlocked() {return hasMilestone(this.layer, 19)},
       tooltip: () => ``,
+    },
+    22: {
+      requirementDescription: "36 Abstracts",
+      effectDescription: () => `${colored('A Seedy Place', "#000")}'s effect is better.`,
+      done() {return player[this.layer].points.gte(36)},
+      unlocked() {return hasMilestone(this.layer, 20)},
+      tooltip: () => `1 + log${subscript(10)}(x + 1) / 2 => 1 + log${subscript(10)}(x + 1)`,
+    },
+    23: {
+      requirementDescription: "45 Abstracts",
+      effectDescription: () => `The third Abstract Power effect is better.`,
+      done() {return player[this.layer].points.gte(45)},
+      unlocked() {return hasMilestone(this.layer, 21)},
+      tooltip: () => `1 + ${writeLog('5', 'AP + 1')} / 4 => 1 + ${writeLog('3', 'AP + 1')} / 2`
     },
   },
   buyables: {
@@ -389,6 +395,32 @@ addLayer("a", {
       unlocked() {return player.g.unlocked}
     },
   },
+  displayBoxes: {
+    1: {
+      title: () => `${colored("Effects", "#000")}`,
+      description: () => `
+        ${x.gte(25)?"First Effect: "+colored(formatX(tmp.a.APEffect1), "#060")+" to J-fragments gain.":writeLocked(25, "abstract power")}<br>
+        ${x.gte(150)?"Second Effect: "+colored(formatDiv(tmp.a.APEffect2), "#060")+" to next Abstract requirement.":writeLocked(150, "abstract power")}<br>
+        ${player.j.points.gte(1.5e8)||hasUpgrade("g", 11)?"Third Effect: "+colored(formatX(tmp.a.APEffect3), "#060")+" to Abstract Power gain.":writeLocked(1.5e8, "J-points")}<br>
+        ${x.gte(3000)?"Fourth Effect: "+colored(formatX(tmp.a.APEffect4), "#060")+" to J-points gain.":writeLocked(3000, "abstract power")}<br>
+        ${hasMilestone('a', 8)?"Fifth Effect: "+colored(formatX(tmp.a.APEffect5), "#060")+" to Growth gain.":""}<br>
+        ${hasMilestone('a', 14)?"Sixth Effect: "+colored(formatX(tmp.a.APEffect6), "#060")+" to Seeds gain.":""}<br>
+      `,
+      color: () => tmp.a.color,
+    },
+    2: {
+      title: () => `${colored("Formulas", "#000")}`,
+      description: () => `
+        ${x.gte(25)?"First Effect: "+writeStringCondition("1 + log"+subscript("5")+"(AP + 1) * 2", "1 + log"+subscript("10")+"(AP + 1)", hasMilestone('a', 8)):writeLocked(25, "abstract power")}<br>
+        ${x.gte(150)?"Second Effect: (AP / 10)"+superscript("0.25")+" + 1":writeLocked(150, "abstract power")}<br>
+        ${player.j.points.gte(1.5e8)||hasUpgrade("g", 11)?"Third Effect: 1 + "+(hasMilestone('a', 23)?writeLog("3", "AP + 1")+" / 2":writeLog("5", "AP + 1")+" / 4"):writeLocked(1.5e8, "J-points")}<br>
+        ${x.gte(3000)?"Fourth Effect: 1 + AP"+superscript(format(1/3))+" / 5":writeLocked(3000, "abstract power")}<br>
+        ${hasMilestone('a', 8)?"Fifth Effect: 1 + log"+subscript("10")+"(AP + 1) / 6":""}<br>
+        ${hasMilestone('a', 14)?"Sixth Effect: 1 + log"+subscript("10")+"(AP + 1) / 5":""}<br>
+      `,
+      color: () => tmp.a.color,
+    },
+  },
   layerShown() {return hasUpgrade("j", 25) || player[this.layer].unlocked},
   update(diff) {
     apGen = tmp[this.layer].abstractPowerGen
@@ -415,8 +447,19 @@ addLayer("a", {
   }*/
   doReset(resettingLayer) {
     if (layers[resettingLayer].row <= this.row) {
-      if (layers[resettingLayer].layer != "a" && !hasUpgrade('g', 33)) player[this.layer].power = E(0)
+      if (layers[resettingLayer].layer != "a" && !hasUpgrade('g', 25)) player[this.layer].power = E(0)
       return;
     };
+
+    let keptMS = []
+
+    if (hasMilestone('t', 1) || hasMilestone('d', 1) || hasMilestone('s', 1)) keptMS.push(0, 8, 14)
+    if (hasMilestone('d', 3)) keptMS.push(3, 4, 5, 6)
+
+    let keep = [keptMS]
+
+    layerDataReset(this.layer, keep)
+
+    player.a.milestones.push(...keptMS)
   },
 })

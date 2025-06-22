@@ -11,6 +11,7 @@ addLayer('g', {
     sprouts: E(0),
     plants: E(0),
     trees: E(0),
+    resetTime: 0,
   }},
   resetDescription: "Your fragments causes the tree slowly branch out to produce ",
   color: "#618968",
@@ -25,6 +26,9 @@ addLayer('g', {
     if (hasUpgrade(this.layer, 15)) mult = mult.mul(upgradeEffect(this.layer, 15))
     if (hasMilestone('a', 7)) mult = mult.mul(milestoneEffect('a', 7))
     if (hasMilestone('a', 8)) mult = mult.mul(tmp.a.APEffect5)
+    
+      mult = mult.mul(tmp.s.volumeEffect2)
+
     return mult
   },
   gainExp() {
@@ -41,6 +45,7 @@ addLayer('g', {
 
     gain = gain.mul(tmp.g.plantEffect1)
     gain = gain.mul(tmp.a.APEffect6)
+    gain = gain.mul(tmp.d.diceEffect1)
 
     return gain
   },
@@ -49,9 +54,10 @@ addLayer('g', {
     gain = gain.add(buyableEffect("g", 12))
 
     if (hasUpgrade(this.layer, 24)) gain = gain.mul(upgradeEffect(this.layer, 24))
-    if (hasUpgrade(this.layer, 25)) gain = gain.mul(upgradeEffect(this.layer, 25))
+    if (hasUpgrade(this.layer, 31)) gain = gain.mul(upgradeEffect(this.layer, 31))
 
     gain = gain.mul(tmp.g.treeEffect1)
+    gain = gain.mul(tmp.d.diceEffect1)
 
     return gain
   },
@@ -59,8 +65,10 @@ addLayer('g', {
     let gain = E(0)
     gain = gain.add(buyableEffect("g", 13))
 
-    if (hasUpgrade(this.layer, 31)) gain = gain.mul(upgradeEffect(this.layer, 31))
+    if (hasUpgrade(this.layer, 32)) gain = gain.mul(upgradeEffect(this.layer, 32))
     if (hasMilestone('a', 15)) gain = gain.mul(milestoneEffect('a', 15))
+
+    gain = gain.mul(tmp.d.diceEffect1)
 
     return gain
   },
@@ -68,7 +76,9 @@ addLayer('g', {
     let gain = E(0)
     gain = gain.add(buyableEffect("g", 14))
 
-    if (hasUpgrade(this.layer, 32)) gain = gain.mul(upgradeEffect(this.layer, 32))
+    if (hasUpgrade(this.layer, 33)) gain = gain.mul(upgradeEffect(this.layer, 33))
+
+    gain = gain.mul(tmp.d.diceEffect1)
 
     return gain
   },
@@ -84,7 +94,7 @@ addLayer('g', {
   },
   plantEffect1() {
     x = player.g.plants
-    effect = Decimal.log(x.add(1), 10).add(1)
+    effect = Decimal.log(x.add(1), 10).pow(1.5).add(1)
     return effect
   },
   plantEffect2() {
@@ -136,13 +146,7 @@ addLayer('g', {
         "prestige-button",
         "resource-display",
         "blank",
-        ["display-text", function() {return `
-          You have ${colored(format(player.g.seeds), tmp.g.color)} seeds, which makes ${colored("Classical Tree Game", tmp.j.color)+"'s scaling starts "+colored(format(tmp.g.seedEffect, 0), tmp.g.color)} ${shiftDown?"(floor(log"+subscript(2)+"(1 + Seeds / 2)))":""} later. (${format(tmp.g.seedGain)}/s)<br>
-          You have ${colored(format(player.g.sprouts), tmp.g.color)} sprouts, which translates into ${colored(formatX(tmp.g.sproutEffect), tmp.g.color)} ${shiftDown?"(1.15"+superscript("log"+subscript("2")+"(Sprouts + 1)")+")":""} multiplier to Abstract Power. (${format(tmp.g.sproutGain)}/s)<br>
-          You have ${colored(format(player.g.plants), tmp.g.color)} plants, which translates into ${colored(formatX(tmp.g.plantEffect1), tmp.g.color)} ${shiftDown?"("+writeLog("10", "x + 10)"):""} multiplier to Seeds and ${colored(formatX(tmp.g.plantEffect2), tmp.g.color)} ${shiftDown?"(1 + "+writeExp("0.5", "x")+" * 2)":""} to J-points. (${format(tmp.g.plantGain)}/s)<br>
-          You have ${colored(format(player.g.trees), tmp.g.color)} trees, which translates into ${colored(formatX(tmp.g.treeEffect1), tmp.g.color)} ${shiftDown?"("+writeExp("0.2", "x")+" * 3 + 1)":""} multiplier to Sprouts and ${colored(formatX(tmp.g.treeEffect2), tmp.g.color)} ${shiftDown?"(1 + "+writeExp(hasMilestone('a', 20)?"0.8":"0.4", "x")+" * 4)":""} to J-fragments. (${format(tmp.g.treeGain)}/s)<br>
-          ${shiftDown?"":"(Hold shift to see formula)"}
-        `}],
+        "display-boxes",
         "blank",
         "buyables",
         "blank",
@@ -167,9 +171,10 @@ addLayer('g', {
   upgrades: {
     11: {
       title: "Effect Keeping",
-      description: function() {return `Keep the third Abstract Power effect on row 2 resets.`},
+      description: function() {return `Permanently unlock the third Abstract Power effect.`},
       cost: function() {
         x = E(player.g.upgrades.length)
+        if (hasUpgrade('g', 35)) x = x.sub(1)
         return E(3).pow(x.add(1).clamp(1, 5))
       },
     },
@@ -178,6 +183,7 @@ addLayer('g', {
       description: function() {return `Keep the first and second row of J upgrades on Growth.`},
       cost: function() {
         x = E(player.g.upgrades.length)
+        if (hasUpgrade('g', 35)) x = x.sub(1)
         return E(3).pow(x.add(1).clamp(1, 5))
       },
     },
@@ -186,6 +192,7 @@ addLayer('g', {
       description: function() {return `Keep the third row of J upgrades on Growth.`},
       cost: function() {
         x = E(player.g.upgrades.length)
+        if (hasUpgrade('g', 35)) x = x.sub(1)
         return E(3).pow(x.add(1).clamp(1, 5))
       },
     },
@@ -194,6 +201,7 @@ addLayer('g', {
       description: function() {return `Your unspent Growth boosts Abstract Power.`},
       cost: function() {
         x = E(player.g.upgrades.length)
+        if (hasUpgrade('g', 35)) x = x.sub(1)
         return E(4).pow(x.add(1).clamp(1, 5))
       },
       effect() {
@@ -208,6 +216,7 @@ addLayer('g', {
       description: function() {return `Your unspent J-points boosts Growth.`},
       cost: function() {
         x = E(player.g.upgrades.length)
+        if (hasUpgrade('g', 35)) x = x.sub(1)
         return E(5).pow(x.add(1).clamp(1, 5))
       },
       effect() {
@@ -228,6 +237,7 @@ addLayer('g', {
       description: function() {return `Boosts seeds gain based on growth.`},
       effect() {
         x = player.g.points
+        if (hasMilestone('a', 22)) return Decimal.log(x.add(1), 10).add(1)
         return (Decimal.log(x.add(1), 10).div(2)).add(1)
       },
       effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
@@ -236,13 +246,13 @@ addLayer('g', {
       canAfford() {return player[this.layer].seeds.gte(this.cost)},
       pay() {player[this.layer].seeds = player[this.layer].seeds.sub(this.cost)},
       unlocked() {return hasUpgrade(this.layer, 21)},
-      tooltip: () => `Effect: 1 + log${subscript(10)}(x + 1) / 2`,
+      tooltip: () => hasMilestone('a', 22)?`Effect: 1 + log${subscript(10)}(x + 1)`:`Effect: 1 + log${subscript(10)}(x + 1) / 2`,
     },
     23: {
       title: "Abstractive Seeds",
       description: function() {return `Seeds divides Abstracts cost requirement.`},
       effect() {
-        x = player.g.sprouts
+        x = player.g.seeds
         return Decimal.pow(x, 0.7).add(1)
       },
       effectDisplay() {return `${formatDiv(upgradeEffect(this.layer, this.id))}`},
@@ -269,6 +279,15 @@ addLayer('g', {
       tooltip: () => `Effect: 1 + ${writeLog("10", "J-points + 1")} / 10`,
     },
     25: {
+      title: "Resetless Abstract",
+      description: function() {return `Abstract Power will not reset on Growth. (honestly why did i put this very late, idk but this is just filler)`},
+      cost: E(5_000),
+      currencyDisplayName: "Sprouts",
+      canAfford() {return player[this.layer].sprouts.gte(this.cost)},
+      pay() {player[this.layer].sprouts = player[this.layer].sprouts.sub(this.cost)},
+      unlocked() {return hasUpgrade(this.layer, 24)},
+    },
+    31: {
       title: "Floem",
       description: function() {return `Plants gives a boost to sprouts at a reduced rate.`},
       effect() {
@@ -280,10 +299,10 @@ addLayer('g', {
       currencyDisplayName: "Sprouts",
       canAfford() {return player[this.layer].sprouts.gte(this.cost)},
       pay() {player[this.layer].sprouts = player[this.layer].sprouts.sub(this.cost)},
-      unlocked() {return hasUpgrade(this.layer, 24)},
+      unlocked() {return hasUpgrade(this.layer, 25)},
       tooltip: () => `Effect: 1 + ${writeLog("4", "Plants + 1")}`,
     },
-    31: {
+    32: {
       title: "Xilem",
       description: function() {return `Growth gives a boost to plants at reduced rate.`},
       effect() {
@@ -291,14 +310,14 @@ addLayer('g', {
         return Decimal.log(x.add(1), 10).div(2).add(1)
       },
       effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
-      cost: E(1_000),
+      cost: E(300),
       currencyDisplayName: "Trees",
       canAfford() {return player[this.layer].trees.gte(this.cost)},
       pay() {player[this.layer].trees = player[this.layer].trees.sub(this.cost)},
-      unlocked() {return hasUpgrade(this.layer, 25)},
+      unlocked() {return hasUpgrade(this.layer, 31)},
       tooltip: () => `Effect: 1 + ${writeLog("10", "Growth + 1")} / 2`,
     },
-    32: {
+    33: {
       title: "Tree of Magnitude",
       description: function() {return `Every Order of Magnitude of J-fragments gives a boost to Trees.`},
       effect() {
@@ -310,17 +329,8 @@ addLayer('g', {
       currencyDisplayName: "Trees",
       canAfford() {return player[this.layer].trees.gte(this.cost)},
       pay() {player[this.layer].trees = player[this.layer].trees.sub(this.cost)},
-      unlocked() {return hasUpgrade(this.layer, 31)},
-      tooltip: () => `Effect: ${writeExp('floor('+writeLog(10, "Fragments + 1")+")", "1.05")}`,
-    },
-    33: {
-      title: "Resetless Abstract",
-      description: function() {return `Abstract Power will not reset on Growth. (honestly why did i put this very late, idk but this is just filler)`},
-      cost: E(15_000),
-      currencyDisplayName: "Trees",
-      canAfford() {return player[this.layer].trees.gte(this.cost)},
-      pay() {player[this.layer].trees = player[this.layer].trees.sub(this.cost)},
       unlocked() {return hasUpgrade(this.layer, 32)},
+      tooltip: () => `Effect: ${writeExp('floor('+writeLog(10, "Fragments + 1")+")", "1.05")}`,
     },
     34: {
       title: "Almost there",
@@ -333,7 +343,7 @@ addLayer('g', {
     },
     35: {
       title: "The Peak",
-      description: function() {return `Unlocks a new layer.`},
+      description: function() {return `Unlocks 3 new layers for you to choose from. (Also kept between layers.)`},
       cost: E(1e33),
       unlocked() {return hasUpgrade(this.layer, 34)},
     },
@@ -358,13 +368,13 @@ addLayer('g', {
         setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
       },
       effect(x) {
-        effect = Decimal.pow(2, x.add(this.freeLevels())).sub(1)
+        effect = Decimal.pow(this.effectBase(), x.add(this.freeLevels())).sub(1)
         return effect
       },
       tooltip: function() {return `
         Cost: ${format(5_000)} * 10${superscript("x")}<br>
         ${writeScale(getBuyableAmount(this.layer, this.id), this.scalingStart(), this.scalingPower(), "P")}
-        Effect: 2${superscript("x")} - 1
+        Effect: ${format(this.effectBase())}${superscript("x")} - 1
       `},
       unlocked() {return hasUpgrade('g', 21)},
       scalingStart() {
@@ -379,6 +389,11 @@ addLayer('g', {
       freeLevels() {
         let x = E(0)
         if (hasUpgrade(this.layer, 34)) x = x.add(getBuyableAmount(this.layer, 12))
+        return x
+      },
+      effectBase() {
+        let x = E(2)
+        if (hasMilestone('a', 21)) x = x.add(1)
         return x
       },
     },
@@ -401,17 +416,21 @@ addLayer('g', {
         setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
       },
       effect(x) {
-        effect = Decimal.pow(3, x.add(this.freeLevels())).sub(1)
+        effect = Decimal.pow(this.effectBase(), x.add(this.freeLevels())).sub(1)
         return effect
       },
       tooltip: function() {return `
         Cost: ${format(1_000)} * 15${superscript("x")}<br>
-        Effect: 3${superscript("x")} - 1
+        Effect: ${format(this.effectBase())}${superscript("x")} - 1
       `},
       unlocked() {return hasUpgrade('g', 21)},
       freeLevels() {
         let x = E(0)
         if (hasUpgrade(this.layer, 34)) x = x.add(getBuyableAmount(this.layer, 13))
+        return x
+      },
+      effectBase() {
+        let x = E(3)
         return x
       },
     },
@@ -434,17 +453,21 @@ addLayer('g', {
         setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
       },
       effect(x) {
-        effect = Decimal.pow(2, x.add(this.freeLevels())).sub(1)
+        effect = Decimal.pow(this.effectBase(), x.add(this.freeLevels())).sub(1)
         return effect
       },
       tooltip: function() {return `
         Cost: ${format(1_500)} * 20${superscript("x")}<br>
-        Effect: 2${superscript("x")} - 1
+        Effect: ${format(this.effectBase())}${superscript("x")} - 1
       `},
       unlocked() {return hasMilestone('a', 11)},
       freeLevels() {
         let x = E(0)
         if (hasUpgrade(this.layer, 34)) x = x.add(getBuyableAmount(this.layer, 14))
+        return x
+      },
+      effectBase() {
+        let x = E(2)
         return x
       },
     },
@@ -467,14 +490,31 @@ addLayer('g', {
         setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
       },
       effect(x) {
-        return Decimal.pow(2, x).sub(1)
+        return Decimal.pow(this.effectBase(), x).sub(1)
       },
       tooltip: function() {return `
         Cost: ${format(2_000)} * 30${superscript("x")}<br>
-        Effect: 2${superscript("x")} - 1
+        Effect: ${format(this.effectBase())}${superscript("x")} - 1
       `},
-      unlocked() {return hasMilestone('a', 13)}
+      unlocked() {return hasMilestone('a', 13)},
+      effectBase() {
+        let x = E(2)
+        return x
+      },
     },
+  },
+  displayBoxes: {
+    1: {
+      title: () => colored("Plants", "#000"),
+      description: () => `
+        You have ${colored(format(player.g.seeds), "#6d6")} seeds, which makes ${colored("Classical Tree Game", tmp.j.color)+"'s scaling starts "+colored(format(tmp.g.seedEffect, 0), "#6d6")} ${shiftDown?"(floor(log"+subscript(2)+"(1 + Seeds / 2)))":""} later. (${format(tmp.g.seedGain)}/s)<br>
+        You have ${colored(format(player.g.sprouts), "#6d6")} sprouts, which translates into ${colored(formatX(tmp.g.sproutEffect), "#6d6")} ${shiftDown?"(1.15"+superscript("log"+subscript("2")+"(Sprouts + 1)")+")":""} multiplier to Abstract Power. (${format(tmp.g.sproutGain)}/s)<br>
+        You have ${colored(format(player.g.plants), "#6d6")} plants, which translates into ${colored(formatX(tmp.g.plantEffect1), "#6d6")} ${shiftDown?"("+writeLog("10", "x + 1)"+superscript(format(1.5))+" + 1"):""} multiplier to Seeds and ${colored(formatX(tmp.g.plantEffect2), "#6d6")} ${shiftDown?"(1 + "+writeExp("0.5", "x")+" * 2)":""} to J-points. (${format(tmp.g.plantGain)}/s)<br>
+        You have ${colored(format(player.g.trees), "#6d6")} trees, which translates into ${colored(formatX(tmp.g.treeEffect1), "#6d6")} ${shiftDown?"("+writeExp("0.2", "x")+" * 3 + 1)":""} multiplier to Sprouts and ${colored(formatX(tmp.g.treeEffect2), "#6d6")} ${shiftDown?"(1 + "+writeExp(hasMilestone('a', 20)?"0.8":"0.4", "x")+" * 4)":""} to J-fragments. (${format(tmp.g.treeGain)}/s)<br>
+        ${shiftDown?"":"(Hold shift to see formula)"}
+      `,
+      color: () => tmp.g.color
+    }
   },
   update(diff) {
     seedGain = tmp[this.layer].seedGain
@@ -486,5 +526,21 @@ addLayer('g', {
     player[this.layer].sprouts = player[this.layer].sprouts.add(sproutGain.mul(diff))
     player[this.layer].plants = player[this.layer].plants.add(plantGain.mul(diff))
     player[this.layer].trees = player[this.layer].trees.add(treeGain.mul(diff))
-  }
+  },
+  doReset(resettingLayer) {
+    if (layers[resettingLayer].row <= this.row) return;
+
+    let keptUpg = []
+
+    if (layers[resettingLayer].row >= 2 && hasUpgrade("g", 35)) keptUpg.push(35)
+
+    let keep = [keptUpg]
+
+    layerDataReset(this.layer, keep)
+
+    player[this.layer].upgrades.push(...keptUpg)
+  },
+  componentStyles: {
+    "display-boxes"() {return {'width' : '100%'}}
+},
 })

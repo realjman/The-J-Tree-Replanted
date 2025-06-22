@@ -5,7 +5,9 @@ addLayer("j", {
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
-        autoBuyable: false
+        autoBuyable: false,
+
+        resetTime: 0,
     }},
     resetDescription: "Form all your fragments into ",
     color: "#aba",
@@ -21,6 +23,7 @@ addLayer("j", {
         if (hasUpgrade(this.layer, 15)) mult = mult.mul(2)
         if (hasUpgrade(this.layer, 23)) mult = mult.mul(upgradeEffect(this.layer, 23))
         if (hasMilestone('a', 1)) mult = mult.mul(milestoneEffect('a', 1))
+        if (hasMilestone('d', 2)) mult = mult.mul(milestoneEffect('d', 2))
 
         mult = mult.mul(tmp.a.APEffect4)
         mult = mult.mul(tmp.g.plantEffect2)
@@ -128,7 +131,7 @@ addLayer("j", {
         },
         25: {
             title: "New Stuff",
-            description: function() {return `Unlocks a new layer. (This upgrade will be kept between layers.)`},
+            description: function() {return `Unlocks a new layer. (This upgrade will be kept between reset layers.)`},
             cost: new Decimal(6000),
             unlocked() {return hasUpgrade(this.layer, 24)},
         },
@@ -170,7 +173,7 @@ addLayer("j", {
             `},
             cost: new Decimal(250_000),
             canAfford() {
-                return (player.a.points.gte(3)) && player[this.layer].points.gte(this.cost)
+                return ((player.a.points.gte(3)) && player[this.layer].points.gte(this.cost)) || (hasMilestone('t', 1) || hasMilestone('d', 1) || hasMilestone('s', 1))
             },
             unlocked() {return hasUpgrade(this.layer, 33)},
         },
@@ -198,7 +201,7 @@ addLayer("j", {
                 return `Doubles J-fragment gain per buyable amount${superscript(format(this.effectExp()), "#000")}.
                 ${hasMilestone('a', 5)?"Requirement":"Cost"}: ${format(this.cost())} J-points ${writeScaled(getBuyableAmount(this.layer, this.id), this.scalingStart())}
                 Amount: ${format(getBuyableAmount(this.layer, this.id), 0)}
-                Currently: ${formatX(buyableEffect(this.layer, this.id))}
+                Currently: ${formatX(buyableEffect(this.layer, this.id))} ${writeSC(buyableEffect(this.layer, this.id),"1e100")}
                 ${!hasUpgrade('j', 21) && getBuyableAmount(this.layer, this.id).gte(3)?"An upgrade appeared in the Upgrades tab, you should go check it out.":""}
             `},
             cost(x) {return simpleCost(x.scale(this.scalingStart(), this.scalingPower(), "L"), "EA", 10, 2, 1.5)},
@@ -216,7 +219,7 @@ addLayer("j", {
                 }
             },
             effect(x) {
-                return Decimal.pow(this.effectBase(), x.pow(this.effectExp()))
+                return Decimal.pow(this.effectBase(), x.pow(this.effectExp())).softcap(this.scStart(), this.scPower(), 2)
             },
             scalingStart() {
                 let scaling = E(10)
@@ -228,10 +231,19 @@ addLayer("j", {
                 let power = E(2)
                 return power
             },
+            scStart() {
+                let start = E(1e100)
+                return start
+            },
+            scPower() {
+                let power = E(0.8)
+                return power
+            },
             tooltip: function() {return `
                 Cost: 10 * (1 + 2 * x) * 1.5${superscript("x")}<br>
                 ${writeScale(getBuyableAmount(this.layer, this.id), this.scalingStart(), this.scalingPower(), "L")}
-                Effect: ${format(this.effectBase())}${superscript("x")}
+                Effect: ${format(this.effectBase())}${superscript("x")}<br>
+                ${writeSCForm(buyableEffect(this.layer, this.id), this.scStart(), this.scPower(), 2)}
             `},
             unlocked() {return hasUpgrade("j", 14)}
         },
@@ -274,6 +286,8 @@ addLayer("j", {
         if (layers[resettingLayer].layer == "g" && hasUpgrade('g', 12)) keptUpg.push(11, 12, 13, 14, 15, 21, 22, 23, 24)
         if (layers[resettingLayer].layer == "g" && hasUpgrade('g', 13)) keptUpg.push(31, 32, 33, 34, 35)
 
+        if (layers[resettingLayer].layer == 'd' && hasMilestone('d', 3)) keptUpg = player[this.layer].upgrades
+
         if (layers[resettingLayer].row >= 1 && hasMilestone('a', 6) && player[this.layer].autoBuyable) keepAB = true
 
         let keep = [keptUpg, keepAB]
@@ -282,7 +296,7 @@ addLayer("j", {
 
         player[this.layer].upgrades.push(...keptUpg)
         player[this.layer].autoBuyable = keep[1]
-        if (layers[resettingLayer].layer == "a" && hasMilestone('a', 4)) setBuyableAmount(this.layer, 11, getBuyableAmount(this.layer, 11).add(3))
+        if ((layers[resettingLayer].layer == "a" && hasMilestone('a', 4))||(layers[resettingLayer].layer == "d" && hasMilestone('d', 3))) setBuyableAmount(this.layer, 11, getBuyableAmount(this.layer, 11).add(3))
         
     },
     passiveGeneration() {

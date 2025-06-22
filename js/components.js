@@ -194,6 +194,27 @@ function loadVue() {
 		},
 	})
 
+	Vue.component('display-boxes', {
+		props: ['layer', 'data'],
+		template: `
+			<div v-if="tmp[layer].displayBoxes" class="display-boxes">
+				<div v-for="id in (data === undefined ? Object.keys(tmp[layer].displayBoxes) : data)" v-if="tmp[layer].displayBoxes[id]!== undefined && tmp[layer].displayBoxes[id].unlocked">
+					<display-box :layer = "layer" :data = "id" v-bind:style="tmp[layer].componentStyles.displayBox"></display-box>
+				</div>
+			</div>
+		`
+	})
+
+	Vue.component('display-box', {
+		props: ['layer', 'data'],
+		template: `
+			<div v-if="tmp[layer].displayBoxes && tmp[layer].displayBoxes[data]!== undefined && tmp[layer].displayBoxes[data].unlocked" v-bind:style="[{'background-color': tmp[layer].displayBoxes[data].color}, tmp[layer].displayBoxes[data].style]" v-bind:class="['display-box']">
+				<h3 v-html="tmp[layer].displayBoxes[data].title"></h3>
+				<span v-html="run(layers[layer].displayBoxes[data].description, layers[layer].displayBoxes[data])"></span>
+			</div>
+		`
+	})
+
 	Vue.component('milestones', {
 		props: ['layer', 'data'],
 		template: `

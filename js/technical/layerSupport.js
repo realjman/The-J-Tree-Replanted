@@ -87,6 +87,16 @@ function setupLayer(layer){
             }
         }
     }
+    if (layers[layer].displayBoxes){
+        for (thing in layers[layer].displayBoxes){
+            if (isPlainObject(layers[layer].displayBoxes[thing])){
+                layers[layer].displayBoxes[thing].id = thing
+                layers[layer].displayBoxes[thing].layer = layer
+                if (layers[layer].displayBoxes[thing].unlocked === undefined)
+                    layers[layer].displayBoxes[thing].unlocked = true
+            }
+        }
+    }
     if (layers[layer].achievements){
         setRowCol(layers[layer].achievements)
         for (thing in layers[layer].achievements){
