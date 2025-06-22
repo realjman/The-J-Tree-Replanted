@@ -13,8 +13,8 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.2.7",
-	name: "Grow The Plants",
+	num: "0.3 testing",
+	name: "so goober",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
@@ -108,7 +108,7 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: Ignore this, you are a goober<br> btw wen, i have not work on time layer yet so please dont go for that yet.`
+		return `Current Endgame: Ignore this, you are a goober<br> btw wen, i have not work on time layer yet so please dont go for that yet. and yes you can import the savefile you did`
 	}
 ]
 
