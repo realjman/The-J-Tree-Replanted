@@ -107,21 +107,29 @@ function writeStringCondition(str1, str2, condition) {
 }
 
 function writeLog(base, eqn, logColor) {
-  return `log${subscript(base, logColor)}(${eqn})`
+  return `log${subscript(format(base), logColor)}(${eqn})`
 }
 
 function writeExp(exp, eqn, expColor, brackets = false) {
-  if (brackets) return `(${eqn})${superscript(exp, expColor)}`
-  return `${eqn}${superscript(exp, expColor)}`
+  if (typeof exp == 'string') return `${eqn}${superscript(exp, expColor)}`
+  if (brackets) return `(${eqn})${superscript(format(exp), expColor)}`
+  return `${eqn}${superscript(format(exp), expColor)}`
 }
 
 function writeRoot(rt, eqn, brackets = false) {
-  if (brackets) return `${rt}√(${eqn})`
-  return `${rt}√${eqn}`
+  if (brackets) return `${format(rt)}√(${eqn})`
+  return `${format(rt)}√${eqn}`
 }
 
 function rollDice(max) {
   return Decimal.floor(Decimal.mul(Math.random(), max).add(1)).clamp(1, max)
+}
+
+function rollGDice(chance) { // 1% = 1, 2% = 2, 3% = 3..., 100% = 100
+  let seed = Decimal.mul(Math.random(), 100).round().div(100)
+
+  if (seed.gte(Decimal.sub(1, chance.div(100)))) return true
+  else return false
 }
 
 function writeGainPS(gain, time) {
@@ -131,4 +139,33 @@ function writeGainPS(gain, time) {
   else if (gainPS.lte(1)) text += `${format(gainPS.mul(60))}/min`
   else text += `${format(gainPS)}/s`
   return text
+}
+
+function rowMultipleUnlocked(row) {
+  let rowLayers = []
+  let a = 0
+  for (let layer in layers) {
+    if (layers[layer].row == row) rowLayers.push(layer)
+  }
+  for (let i in rowLayers) {
+    let lyr = rowLayers[i]
+    a += player[lyr].unlocked
+  }
+  return (a >= 2)
+}
+
+function prodOfEff(...effects) {
+  let effs = effects
+  let totalMult = E(1)
+  for (let i in effs) {
+    totalMult = totalMult.mul(effs[i])
+  }
+  return totalMult
+}
+
+function sumOfGeometricSeries(n, a, r) {
+  [n, a, r] = [E(n), E(a), E(r)]
+  if (r.eq(1)) return E(1) // r =/= 1
+  if (r.gt(1)) return (a.mul(r.pow(n).sub(1))).div(r.sub(1)) // a(r^n - 1) / (r - 1)
+  if (r.lt(1)) return (a.mul(Decimal.sub(1, r.pow(n)))).div(Decimal.sub(1, r)) // a(1 - r^n) / (1 - r)
 }

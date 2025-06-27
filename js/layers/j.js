@@ -25,6 +25,8 @@ addLayer("j", {
         if (hasMilestone('a', 1)) mult = mult.mul(milestoneEffect('a', 1))
         if (hasMilestone('d', 2)) mult = mult.mul(milestoneEffect('d', 2))
 
+        if (hasMilestone('a', 25)) mult = mult.mul(getAxisBoosts('y'))
+
         mult = mult.mul(tmp.a.APEffect4)
         mult = mult.mul(tmp.g.plantEffect2)
 
@@ -194,8 +196,10 @@ addLayer("j", {
                 return exp
             },
             effectBase() {
-                if (hasMilestone('a', 18)) return E(2.1)
-                return E(2)
+                let x = E(2)
+                if (hasMilestone('a', 18)) x = x.add(0.1)
+                if (hasMilestone('s', 2)) x = x.mul(tmp.s.volumeEffect3)
+                return x
             },
             display() {
                 return `Doubles J-fragment gain per buyable amount${superscript(format(this.effectExp()), "#000")}.
@@ -207,12 +211,15 @@ addLayer("j", {
             cost(x) {return simpleCost(x.scale(this.scalingStart(), this.scalingPower(), "L"), "EA", 10, 2, 1.5)},
             canAfford() {return player[this.layer].points.gte(this.cost())},
             buy() {
-                if (!hasMilestone('a', 5)) player[this.layer].points = player[this.layer].points.sub(this.cost())
-                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                if (!hasMilestone('a', 5)) {
+                    player[this.layer].points = player[this.layer].points.sub(this.cost())
+                    setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                }
+                else this.buyMax()
             },
             buyMax() {
                 x = player[this.layer].points.add(1)
-                if (hasMilestone('a', 6) && player[this.layer].autoBuyable) {
+                if (hasMilestone('a', 6)) {
                     if (simpleCost(x, "EAI", 10, 2, 1.5).floor().gt(this.scalingStart())) {final = simpleCost(x, "EAI", 10, 2, 1.5).scale(this.scalingStart(), this.scalingPower(), "L", true).floor().add(1)}
                     else {final = simpleCost(x, "EAI", 10, 2, 1.5).floor().add(1)}
                     setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
@@ -286,7 +293,9 @@ addLayer("j", {
         if (layers[resettingLayer].layer == "g" && hasUpgrade('g', 12)) keptUpg.push(11, 12, 13, 14, 15, 21, 22, 23, 24)
         if (layers[resettingLayer].layer == "g" && hasUpgrade('g', 13)) keptUpg.push(31, 32, 33, 34, 35)
 
-        if (layers[resettingLayer].layer == 'd' && hasMilestone('d', 3)) keptUpg = player[this.layer].upgrades
+        if (layers[resettingLayer].row == 2) {
+            if (hasMilestone(resettingLayer, 3)) keptUpg = player[this.layer].upgrades
+        }
 
         if (layers[resettingLayer].row >= 1 && hasMilestone('a', 6) && player[this.layer].autoBuyable) keepAB = true
 
@@ -296,7 +305,7 @@ addLayer("j", {
 
         player[this.layer].upgrades.push(...keptUpg)
         player[this.layer].autoBuyable = keep[1]
-        if ((layers[resettingLayer].layer == "a" && hasMilestone('a', 4))||(layers[resettingLayer].layer == "d" && hasMilestone('d', 3))) setBuyableAmount(this.layer, 11, getBuyableAmount(this.layer, 11).add(3))
+        if ((layers[resettingLayer].layer == "a" && hasMilestone('a', 4))||(layers[resettingLayer].layer >= 2 && (hasMilestone('d', 3)||hasMilestone('t', 3)||hasMilestone('s', 3)))) setBuyableAmount(this.layer, 11, getBuyableAmount(this.layer, 11).add(3))
         
     },
     passiveGeneration() {

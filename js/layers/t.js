@@ -74,8 +74,19 @@ addLayer('t', {
                 Keep the 1st, 9th, 15th ${colored("Abstract", tmp.a.color)} milestone on row 3 resets, ${colored("Less Scaling", "#000")} does not require ${colored("3 Abstract", tmp.a.color)}.<br>
                 ${(!hasMilestone('d', 1))?'<h6 style="color: rgba(0, 0, 0, 0.3)">You will unlock another effect when you have the first milestone from one of the other row 3 layers.</h6>':'Since you have the first milestone from one of the other row 3 layers, divide '+colored("Abstract", tmp.a.color)+" requirement based on time."}
             `,
+            effect() {
+                return E(1)
+            },
             done() {return player.t.points.gte(1)},
-        }
+        },
+        3: {
+            requirementDescription: `3 Condensed Time [3]`,
+            effectDescription: () => `
+                Keep all the upgrades and 3 levels of ${colored('Classical Tree Game', '#000')} in ${colored("J", tmp.j.color)} Layer upon doing a ${colored("Time", tmp.t.color)} reset. ${colored("Abstract Milestone", tmp.a.color)} 4, 5, 6 and 7 are kept.
+            `,
+            done() {return player.t.points.gte(3)},
+            unlocked() {return hasMilestone('s', 1)},
+        },
     },
     update(diff) {
         timeGain = tmp.t.timeGain

@@ -1,5 +1,5 @@
 let modInfo = {
-	name: "The J Tree: Replanted",
+	name: "The J Tree: Replanted (testing)",
 	id: "tjtrr",
 	author: "realjman",
 	pointsName: "J-fragments",
@@ -13,7 +13,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.3 testing",
+	num: "0.3 testing patch 2",
 	name: "so goober",
 }
 
@@ -63,16 +63,10 @@ function getBasePointGen() {
 	return base
 }
 
-// Calculate points/sec!
-function getPointGen() {
-	if(!canGenPoints())
-		return new Decimal(0)
+// Multipliers (bite of '87)
+function getPointMult() {
+	let mult = E(1)
 
-	let base = getBasePointGen()
-	let mult = new Decimal(1)
-	let exp = new Decimal(1)
-
-	// Multipliers
 	// Upgrades
 		if (hasUpgrade('j', 12)) mult = mult.mul(upgradeEffect('j', 12))
 		if (hasUpgrade('j', 15)) mult = mult.mul(2)
@@ -85,11 +79,37 @@ function getPointGen() {
 		mult = mult.mul(tmp.a.APEffect1)
 		mult = mult.mul(tmp.g.treeEffect2)
 		mult = mult.mul(tmp.d.diceEffect2)
+		mult = mult.mul(tmp.s.effect)
 
-	// Exponents
-		if (hasUpgrade('j', 32)) exp = exp.add(0.01)
-		if (hasMilestone('a', 9)) exp = exp.add(0.01)
-		if (hasMilestone('a', 19)) exp = exp.add(0.02)
+	return mult
+}
+
+// Exponents
+function getPointExp() {
+	let exp = E(1)
+
+	// Upgrades
+	if (hasUpgrade('j', 32)) exp = exp.add(0.01)
+	if (hasUpgrade('d', 12)) exp = exp.add(upgradeEffect('d', 12))
+
+	// Milestones
+	if (hasMilestone('a', 9)) exp = exp.add(0.01)
+	if (hasMilestone('a', 19)) exp = exp.add(0.02)
+
+	// Others
+	exp = exp.add(tmp.s.effectExp)
+
+	return exp
+}
+
+// Calculate points/sec!
+function getPointGen() {
+	if(!canGenPoints())
+		return new Decimal(0)
+
+	let base = getBasePointGen()
+	let mult = getPointMult()
+	let exp = getPointExp()
 	
 	gain = base.mul(mult)
 	if (gain.gte(1)) gain = gain.pow(exp)
@@ -108,7 +128,7 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: Ignore this, you are a goober<br> btw wen, i have not work on time layer yet so please dont go for that yet. and yes you can import the savefile you did`
+		return `Current Endgame: Ignore this, you are a goober<br> i still have not worked on time, ignore that layer please k thx`
 	}
 ]
 

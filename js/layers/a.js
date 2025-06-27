@@ -37,6 +37,8 @@ addLayer("a", {
     if (getBuyableAmount('a', 11).gte(1)) mult = mult.div(buyableEffect('a', 11))
     if (hasUpgrade('g', 23)) mult = mult.div(upgradeEffect('g', 23))
     if (hasMilestone(this.layer, 12)) mult = mult.div(milestoneEffect(this.layer, 12))
+    if (rowMultipleUnlocked(2)) mult = mult.div(prodOfEff(milestoneEffect('t', 1), milestoneEffect('d', 1), milestoneEffect('s', 1)))
+    if (hasMilestone('a', 25)) mult = mult.div(getAxisBoosts('z'))
     return mult
   },
   gainExp() {
@@ -338,6 +340,12 @@ addLayer("a", {
       unlocked() {return hasMilestone(this.layer, 21)},
       tooltip: () => `1 + ${writeLog('5', 'AP + 1')} / 4 => 1 + ${writeLog('3', 'AP + 1')} / 2`
     },
+    24: {
+      requirementDescription: "50 Abstracts [25]",
+      effectDescription: () => `Unlocks a new feature in all of Layer 3. (Kept on resets.)`,
+      done() {return player[this.layer].points.gte(50)},
+      unlocked() {return hasMilestone(this.layer, 22)},
+    },
   },
   buyables: {
     11: {
@@ -348,15 +356,25 @@ addLayer("a", {
       },
       display() {
         return `Divides the next Abstract requirement per buyable amount${superscript(format(this.effectExp()), "#000")}.
-        Cost: ${format(this.cost())} Abstract Power
+        ${hasMilestone('s', 4)?"Requirement":"Cost"}: ${format(this.cost())} Abstract Power
         Amount: ${format(getBuyableAmount(this.layer, this.id), 0)}
         Currently: ${formatDiv(buyableEffect(this.layer, this.id))}` 
       },
       cost(x) {return simpleCost(x, "EA", 100, 1.3, 1.1)},
       canAfford() {return player[this.layer].power.gte(this.cost())},
       buy() {
-        player[this.layer].power = player[this.layer].power.sub(this.cost())
-        setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        if (!hasMilestone('s', 4)) {
+          player[this.layer].power = player[this.layer].power.sub(this.cost())
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        }
+        else this.buyMax()
+      },
+      buyMax() {
+        let x = player[this.layer].power.add(1)
+        if (hasMilestone('s', 4)) {
+          final = simpleCost(x, "EAI", 100, 1.3, 1.1).floor().add(1)
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
+        }
       },
       effect(x) {
         return Decimal.mul(x.pow(0.8), 2).add(1)
@@ -375,15 +393,25 @@ addLayer("a", {
       },
       display() {
         return `Multiply Abstract Power gain per buyable amount${superscript(format(this.effectExp()), "#000")}.
-        Cost: ${format(this.cost())} Abstract Power
+        ${hasMilestone('s', 4)?"Requirement":"Cost"}: ${format(this.cost())} Abstract Power
         Amount: ${format(getBuyableAmount(this.layer, this.id), 0)}
         Currently: ${formatX(buyableEffect(this.layer, this.id))}` 
       },
       cost(x) {return simpleCost(x, "EA", 1_000, 5, 1.3)},
       canAfford() {return player[this.layer].power.gte(this.cost())},
       buy() {
-        player[this.layer].power = player[this.layer].power.sub(this.cost())
-        setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        if (!hasMilestone('s', 4)) {
+          player[this.layer].power = player[this.layer].power.sub(this.cost())
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        }
+        else this.buyMax()
+      },
+      buyMax() {
+        let x = player[this.layer].power.add(1)
+        if (hasMilestone('s', 4)) {
+          final = simpleCost(x, "EAI", 1_000, 5, 1.3).floor().add(1)
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
+        }
       },
       effect(x) {
         return Decimal.pow(1.2, (x.add(1)).log(1.4))
@@ -402,9 +430,9 @@ addLayer("a", {
         ${x.gte(25)?"First Effect: "+colored(formatX(tmp.a.APEffect1), "#060")+" to J-fragments gain.":writeLocked(25, "abstract power")}<br>
         ${x.gte(150)?"Second Effect: "+colored(formatDiv(tmp.a.APEffect2), "#060")+" to next Abstract requirement.":writeLocked(150, "abstract power")}<br>
         ${player.j.points.gte(1.5e8)||hasUpgrade("g", 11)?"Third Effect: "+colored(formatX(tmp.a.APEffect3), "#060")+" to Abstract Power gain.":writeLocked(1.5e8, "J-points")}<br>
-        ${x.gte(3000)?"Fourth Effect: "+colored(formatX(tmp.a.APEffect4), "#060")+" to J-points gain.":writeLocked(3000, "abstract power")}<br>
-        ${hasMilestone('a', 8)?"Fifth Effect: "+colored(formatX(tmp.a.APEffect5), "#060")+" to Growth gain.":""}<br>
-        ${hasMilestone('a', 14)?"Sixth Effect: "+colored(formatX(tmp.a.APEffect6), "#060")+" to Seeds gain.":""}<br>
+        ${x.gte(3000)?"Fourth Effect: "+colored(formatX(tmp.a.APEffect4), "#060")+" to J-points gain.<br>":writeLocked(3000, "abstract power")}
+        ${hasMilestone('a', 8)?"Fifth Effect: "+colored(formatX(tmp.a.APEffect5), "#060")+" to Growth gain.<br>":""}
+        ${hasMilestone('a', 14)?"Sixth Effect: "+colored(formatX(tmp.a.APEffect6), "#060")+" to Seeds gain.":""}
       `,
       color: () => tmp.a.color,
     },
@@ -414,9 +442,9 @@ addLayer("a", {
         ${x.gte(25)?"First Effect: "+writeStringCondition("1 + log"+subscript("5")+"(AP + 1) * 2", "1 + log"+subscript("10")+"(AP + 1)", hasMilestone('a', 8)):writeLocked(25, "abstract power")}<br>
         ${x.gte(150)?"Second Effect: (AP / 10)"+superscript("0.25")+" + 1":writeLocked(150, "abstract power")}<br>
         ${player.j.points.gte(1.5e8)||hasUpgrade("g", 11)?"Third Effect: 1 + "+(hasMilestone('a', 23)?writeLog("3", "AP + 1")+" / 2":writeLog("5", "AP + 1")+" / 4"):writeLocked(1.5e8, "J-points")}<br>
-        ${x.gte(3000)?"Fourth Effect: 1 + AP"+superscript(format(1/3))+" / 5":writeLocked(3000, "abstract power")}<br>
-        ${hasMilestone('a', 8)?"Fifth Effect: 1 + log"+subscript("10")+"(AP + 1) / 6":""}<br>
-        ${hasMilestone('a', 14)?"Sixth Effect: 1 + log"+subscript("10")+"(AP + 1) / 5":""}<br>
+        ${x.gte(3000)?"Fourth Effect: 1 + AP"+superscript(format(1/3))+" / 5<br>":writeLocked(3000, "abstract power")}
+        ${hasMilestone('a', 8)?"Fifth Effect: 1 + log"+subscript("10")+"(AP + 1) / 6<br>":""}
+        ${hasMilestone('a', 14)?"Sixth Effect: 1 + log"+subscript("10")+"(AP + 1) / 5":""}
       `,
       color: () => tmp.a.color,
     },
@@ -453,8 +481,12 @@ addLayer("a", {
 
     let keptMS = []
 
-    if (hasMilestone('t', 1) || hasMilestone('d', 1) || hasMilestone('s', 1)) keptMS.push(0, 8, 14)
-    if (hasMilestone('d', 3)) keptMS.push(3, 4, 5, 6)
+    if (layers[resettingLayer].row == 2) {
+      if (hasMilestone(resettingLayer, 1)) keptMS.push(0, 8, 14)
+      if (hasMilestone(resettingLayer, 3)) keptMS.push(3, 4, 5, 6)
+    }
+
+    if (hasMilestone(this.layer, 24)) keptMS(24)
 
     let keep = [keptMS]
 

@@ -42,6 +42,7 @@ addLayer('g', {
     if (hasUpgrade(this.layer, 22)) gain = gain.mul(upgradeEffect(this.layer, 22))
 
     if (hasMilestone('a', 10)) gain = gain.mul(milestoneEffect('a', 10))
+    if (hasMilestone('a', 25)) gain = gain.mul(getAxisBoosts('x'))
 
     gain = gain.mul(tmp.g.plantEffect1)
     gain = gain.mul(tmp.a.APEffect6)
@@ -56,6 +57,8 @@ addLayer('g', {
     if (hasUpgrade(this.layer, 24)) gain = gain.mul(upgradeEffect(this.layer, 24))
     if (hasUpgrade(this.layer, 31)) gain = gain.mul(upgradeEffect(this.layer, 31))
 
+    if (hasMilestone('a', 25)) gain = gain.mul(getAxisBoosts('x'))
+
     gain = gain.mul(tmp.g.treeEffect1)
     gain = gain.mul(tmp.d.diceEffect1)
 
@@ -68,6 +71,8 @@ addLayer('g', {
     if (hasUpgrade(this.layer, 32)) gain = gain.mul(upgradeEffect(this.layer, 32))
     if (hasMilestone('a', 15)) gain = gain.mul(milestoneEffect('a', 15))
 
+    if (hasMilestone('a', 25)) gain = gain.mul(getAxisBoosts('x'))
+
     gain = gain.mul(tmp.d.diceEffect1)
 
     return gain
@@ -77,6 +82,8 @@ addLayer('g', {
     gain = gain.add(buyableEffect("g", 14))
 
     if (hasUpgrade(this.layer, 33)) gain = gain.mul(upgradeEffect(this.layer, 33))
+
+    if (hasMilestone('a', 25)) gain = gain.mul(getAxisBoosts('x'))
 
     gain = gain.mul(tmp.d.diceEffect1)
 
@@ -343,7 +350,7 @@ addLayer('g', {
     },
     35: {
       title: "The Peak",
-      description: function() {return `Unlocks 3 new layers for you to choose from. (Also kept between layers.)`},
+      description: function() {return `Unlocks 3 new layers for you to choose from. (This upgrade is kept between layer resets.)`},
       cost: E(1e33),
       unlocked() {return hasUpgrade(this.layer, 34)},
     },
@@ -405,11 +412,11 @@ addLayer('g', {
       },
       display() {
         return `Generates sprouts (base) based on the amount of buyable amount${superscript(format(this.effectExp()), "#000")}.
-        Cost: ${format(this.cost())} Seeds
+        Cost: ${format(this.cost())} Seeds ${writeScaled(getBuyableAmount(this.layer, this.id), this.scalingStart())}
         Amount: ${format(getBuyableAmount(this.layer, this.id), 0)} ${this.freeLevels().gt(0)?"+ "+format(this.freeLevels()):""}
         Currently: ${formatAdd(buyableEffect(this.layer, this.id))}/s` 
       },
-      cost(x) {return simpleCost(x, "E", 1_000, 15)},
+      cost(x) {return simpleCost(x.scale(this.scalingStart(), this.scalingPower(), "P"), "E", 1_000, 15)},
       canAfford() {return player[this.layer].seeds.gte(this.cost())},
       buy() {
         player[this.layer].seeds = player[this.layer].seeds.sub(this.cost())
@@ -421,6 +428,7 @@ addLayer('g', {
       },
       tooltip: function() {return `
         Cost: ${format(1_000)} * 15${superscript("x")}<br>
+        ${writeScale(getBuyableAmount(this.layer, this.id), this.scalingStart(), this.scalingPower(), "P")}
         Effect: ${format(this.effectBase())}${superscript("x")} - 1
       `},
       unlocked() {return hasUpgrade('g', 21)},
@@ -432,6 +440,14 @@ addLayer('g', {
       effectBase() {
         let x = E(3)
         return x
+      },
+      scalingStart() {
+        let scaling = E(36)
+        return scaling
+      },
+      scalingPower() {
+        let power = E(2)
+        return power
       },
     },
     13: {

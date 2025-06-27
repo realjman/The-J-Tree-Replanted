@@ -18,6 +18,8 @@ addLayer('stats', {
             description: () => `${colored("J-fragments", "#000")}<br>
             Amount: ${format(player.points)}<br>
             Base Gain: ${format(tmp.basePointGen)}<br>
+            Total Multipliers: ${formatX(getPointMult())}<br>
+            Total Exponents: ${formatPow(getPointExp())}<br>
             Total Gain: ${format(tmp.pointGen)}/s
             `,
             color: "#ccc",
@@ -81,7 +83,7 @@ addLayer('stats', {
             Cost Formula: ${format(tmp.d.requires)} * ${format(tmp.d.base, 3)}${superscript("Dice Power"+superscript(format(tmp.d.exponent)))}<br><br>
             ${colored("Dice Fragments", DARK)}<br>
             Amount: ${format(player.d.fragments)}<br>
-            Total Multiplier: ${format(tmp.d.diceFragMult)}
+            Total Multiplier: ${formatX(tmp.d.diceFragMult)}
             `,
             color: () => tmp.d.color,
             unlocked() {return player.d.unlocked},
@@ -91,6 +93,7 @@ addLayer('stats', {
             description: () => `${colored("Space", "#000")}<br>
             Amount: ${format(player.s.points)}<br>
             Cost Formula: ${format(tmp.s.requires)} * ${format(tmp.s.base, 3)}${superscript("Space"+superscript(format(tmp.s.exponent)))}<br>
+            Volume of 3D Plane: ${format(tmp.s.getSpaceVolume)} units${superscript(3)}
             `,
             color: () => tmp.s.color,
             unlocked() {return player.s.unlocked},

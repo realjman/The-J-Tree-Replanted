@@ -7,6 +7,7 @@ addLayer('d', {
 		points: new Decimal(0),
         unlockOrder: 0,
         fragments: E(0),
+        goldenFragments: E(0),
 
         diceCD: E(0),
         lastDiceValue: E(0),
@@ -35,6 +36,7 @@ addLayer('d', {
     diceRollCD() {
         let x = E(5)
         if (hasMilestone('d', 2)) x = x.sub(1)
+        if (hasUpgrade('d', 14)) x = x.sub(1)
         return x
     },
     diceEffect1() {
@@ -48,6 +50,17 @@ addLayer('d', {
     diceFragMult() {
         let x = E(1)
         x = x.mul(milestoneEffect('d', 3))
+        if (hasUpgrade(this.layer, 11)) x = x.mul(upgradeEffect(this.layer, 11))
+        if (hasUpgrade(this.layer, 13)) x = x.mul(upgradeEffect(this.layer, 13))
+        return x
+    },
+
+    gDiceChance() {
+        let x = E(1)
+        return x
+    },
+    gDiceGain() {
+        let x = E(1)
         return x
     },
     layerShown() {return hasUpgrade('g', 35) || player.t.unlocked || player.d.unlocked},
@@ -66,12 +79,8 @@ addLayer('d', {
                 "main-display",
                 "prestige-button",
                 "resource-display",
-                ['display-text', () => `
-                    You have ${colored(format(player.d.fragments)+" Dice Fragments", tmp.d.color)}, which gives a boost to all the Plants by ${colored(formatX(tmp.d.diceEffect1), tmp.d.color)} ${shiftDown?"("+writeLog(10, "x + 1")+" * 2 + 1)":""} and J-fragments by ${colored(formatX(tmp.d.diceEffect2), tmp.d.color)} ${shiftDown?"("+writeExp(1.2, "x")+" / 10 + 1)":""}.<br>
-                    ${shiftDown?'':'(Hold shift for formulas)'}
-                    <h5 style="color: rgba(255, 255, 255, 0.5)">[You gain dice fragments by rolling the dice, the amount the dice shows gives you the amount of dice fragments.]</h5>
-                    Your highest roll is ${colored(format(player.d.highestRoll, 0), tmp.d.color)}.
-                `],
+                ["display-box", 1],
+                ["display-box", 2],
                 'blank',
                 "clickables",
             ],
@@ -84,6 +93,38 @@ addLayer('d', {
                     'milestones',
                 ],
             },
+            Upgrades: {
+                content: [
+                    'upgrades',
+                ],
+            },
+        },
+    },
+    displayBoxes: {
+        1: {
+            title: () => colored('Dice', tmp.d.color),
+            description: () => `
+                You have ${colored(format(player.d.fragments)+" Dice Fragments", tmp.d.color)}, which gives a boost to all the Plants by ${colored(formatX(tmp.d.diceEffect1), tmp.d.color)} ${shiftDown?"("+writeLog(10, "x + 1")+" * 2 + 1)":""} and J-fragments by ${colored(formatX(tmp.d.diceEffect2), tmp.d.color)} ${shiftDown?"("+writeExp(1.2, "x")+" / 10 + 1)":""}.<br>
+                    ${shiftDown?'':'(Hold shift for formulas)'}
+                    <h5 style="color: rgba(0, 0, 0, 0.3)">[You gain dice fragments by rolling the dice, the amount the dice shows gives you the amount of dice fragments.]</h5>
+                    Your highest roll is ${colored(format(player.d.highestRoll, 0), tmp.d.color)}.
+            `,
+            color: () => "#4a9",
+            style: {
+                "width": "100%"
+            },
+        },
+        2: {
+            title: () => colored('Golden Dice Fragments', "#cd2"),
+            description: () => `
+                You have ${colored(format(player.d.goldenFragments), "#cd2")} Golden Dice Fragments.<br>
+                You gain ${colored(format(tmp.d.gDiceGain), "#cd2")} Golden Dice Fragments with a ${colored(formatPercents(tmp.d.gDiceChance.div(100)), "#cd2")} chance every Dice roll.
+            `,
+            color: () => "#4b7",
+            style: {
+                "width": "100%"
+            },
+            unlocked() {return hasMilestone('a', 24)}
         },
     },
     milestones: {
@@ -91,9 +132,15 @@ addLayer('d', {
             requirementDescription: `1 Dice Power [1]`,
             effectDescription: () => `
                 Keep the 1st, 9th, 15th ${colored("Abstract", tmp.a.color)} milestone on row 3 resets, ${colored("Less Scaling", "#000")} does not require ${colored("3 Abstracts", tmp.a.color)}.
-                ${(!(hasMilestone('t', 1)||hasMilestone('s', 1)))?'<h6 style="color: rgba(0, 0, 0, 0.3)">You will unlock another effect when you have the first milestone from one of the other row 3 layers.</h6>':'Since you have the first milestone from one of the other row 3 layers, divide '+colored("Abstract", tmp.a.color)+" requirement based on dice fragments."}
+                ${(!(hasMilestone('t', 1)||hasMilestone('s', 1)))?'<h6 style="color: rgba(0, 0, 0, 0.3)">You will unlock another effect when you have the first milestone from one of the other row 3 layers.</h6>':'Since you have the first milestone from one of the other row 3 layers, divide '+colored("Abstract", tmp.a.color)+" requirement based on dice fragments."}<br>
+                Currently: ${rowMultipleUnlocked(2)?formatDiv(milestoneEffect('d', 1)):"[LOCKED]"}
             `,
+            effect() {
+                let x = player.d.fragments
+                return rowMultipleUnlocked(2)?x.add(1).log(10).pow(2/3).add(1):E(1)
+            },
             done() {return player.d.points.gte(1)},
+            tooltip: () => `${writeExp(2/3, writeLog("10", "x + 1"))} + 1`
         },
         2: {
             requirementDescription: `2 Dice Power [2]`,
@@ -133,8 +180,63 @@ addLayer('d', {
                 player.d.lastDiceValue = rollDice(tmp.d.maxDiceSides)
                 player.d.highestRoll = player.d.highestRoll.max(player.d.lastDiceValue)
                 player.d.fragments = player.d.fragments.add(player.d.lastDiceValue.mul(tmp.d.diceFragMult))
+                if (hasMilestone('a', 24)) {
+                    if (rollGDice(tmp.d.gDiceChance)) player.d.goldenFragments = player.d.goldenFragments.add(tmp.d.gDiceGain)
+                }
             }
         }
+    },
+    upgrades: {
+        11: {
+            title: "Pretty Lucky",
+            description: () => `Your highest rolls boosts Dice Fragments.`,
+            effect() {
+                let x = player.d.highestRoll
+                return E(1.1).pow(x)
+            },
+            effectDisplay() {return formatX(upgradeEffect(this.layer, this.id))},
+            tooltip: () => `Effect: 1.1${superscript('x')}`,
+            cost: E(100),
+            currencyDisplayName: "Dice Fragments",
+            currencyInternalName: "fragments",
+            currencyLayer: "d",
+        },
+        12: {
+            title: "Need more boosts",
+            description: () => `Your dice fragments boosts J-fragments gain exponent`,
+            effect() {
+                let x = player.d.fragments
+                return (x.add(1)).pow(0.01).log(10).sub(0.005).max(0)
+            },
+            effectDisplay() {return formatAdd(upgradeEffect(this.layer, this.id))},
+            tooltip: () => `Effect: max(0, ${writeLog('10', writeExp(0.01, 'x + 1'))} - 0.005)`,
+            cost: E(300),
+            currencyDisplayName: "Dice Fragments",
+            currencyInternalName: "fragments",
+            currencyLayer: "d",
+        },
+        13: {
+            title: "Dice of Abstract",
+            description: () => `Your abstract boosts dice fragments gain.`,
+            effect() {
+                let x = player.a.points
+                return x.pow(0.5).div(10).add(1)
+            },
+            effectDisplay() {return formatX(upgradeEffect(this.layer, this.id))},
+            tooltip: () => `Effect: 1 + (${writeExp(0.5, 'x')} / 10)`,
+            cost: E(1000),
+            currencyDisplayName: "Dice Fragments",
+            currencyInternalName: "fragments",
+            currencyLayer: "d",
+        },
+        14: {
+            title: "Less time consuming",
+            description: () => `-1s to Dice roll cooldown.`,
+            cost: E(2000),
+            currencyDisplayName: "Dice Fragments",
+            currencyInternalName: "fragments",
+            currencyLayer: "d",
+        },
     },
     update(diff) {
         player.d.diceCD = player.d.diceCD.sub(diff).clampMin(0)
