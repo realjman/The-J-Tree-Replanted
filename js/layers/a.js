@@ -36,9 +36,10 @@ addLayer("a", {
     mult = mult.div(tmp[this.layer].APEffect2)
     if (getBuyableAmount('a', 11).gte(1)) mult = mult.div(buyableEffect('a', 11))
     if (hasUpgrade('g', 23)) mult = mult.div(upgradeEffect('g', 23))
+    if (hasUpgrade('d', 22)) mult = mult.div(upgradeEffect('d', 22))
     if (hasMilestone(this.layer, 12)) mult = mult.div(milestoneEffect(this.layer, 12))
     if (rowMultipleUnlocked(2)) mult = mult.div(prodOfEff(milestoneEffect('t', 1), milestoneEffect('d', 1), milestoneEffect('s', 1)))
-    if (hasMilestone('a', 25)) mult = mult.div(getAxisBoosts('z'))
+    if (hasMilestone('a', 24)) mult = mult.div(getAxisBoosts('z'))
     return mult
   },
   gainExp() {
@@ -344,7 +345,7 @@ addLayer("a", {
       requirementDescription: "50 Abstracts [25]",
       effectDescription: () => `Unlocks a new feature in all of Layer 3. (Kept on resets.)`,
       done() {return player[this.layer].points.gte(50)},
-      unlocked() {return hasMilestone(this.layer, 22)},
+      unlocked() {return hasMilestone(this.layer, 22)||hasMilestone(this.layer, 24)},
     },
   },
   buyables: {
@@ -486,7 +487,7 @@ addLayer("a", {
       if (hasMilestone(resettingLayer, 3)) keptMS.push(3, 4, 5, 6)
     }
 
-    if (hasMilestone(this.layer, 24)) keptMS(24)
+    if (hasMilestone('a', 24)) keptMS.push(24)
 
     let keep = [keptMS]
 

@@ -25,6 +25,10 @@ function simpleCost(x,type,...arg) {
       let [base, exp] = arg
       return Decimal.pow(exp, x).mul(base)
     }
+    case "EI": {
+      let [base, exp] = arg
+      return Decimal.div(x, base).log(exp)
+    }
   }
 }
 
@@ -111,25 +115,17 @@ function writeLog(base, eqn, logColor) {
 }
 
 function writeExp(exp, eqn, expColor, brackets = false) {
+  if (brackets) {
+    if (typeof exp == 'string') return `(${eqn})${superscript(exp, expColor)}`
+    else return `(${eqn})${superscript(format(exp), expColor)}`
+  }
   if (typeof exp == 'string') return `${eqn}${superscript(exp, expColor)}`
-  if (brackets) return `(${eqn})${superscript(format(exp), expColor)}`
   return `${eqn}${superscript(format(exp), expColor)}`
 }
 
 function writeRoot(rt, eqn, brackets = false) {
   if (brackets) return `${format(rt)}√(${eqn})`
   return `${format(rt)}√${eqn}`
-}
-
-function rollDice(max) {
-  return Decimal.floor(Decimal.mul(Math.random(), max).add(1)).clamp(1, max)
-}
-
-function rollGDice(chance) { // 1% = 1, 2% = 2, 3% = 3..., 100% = 100
-  let seed = Decimal.mul(Math.random(), 100).round().div(100)
-
-  if (seed.gte(Decimal.sub(1, chance.div(100)))) return true
-  else return false
 }
 
 function writeGainPS(gain, time) {
@@ -152,6 +148,19 @@ function rowMultipleUnlocked(row) {
     a += player[lyr].unlocked
   }
   return (a >= 2)
+}
+
+function rowAllUnlocked(row) {
+  let rowLayers = []
+  let a = 0
+  for (let layer in layers) {
+    if (layers[layer].row == row) rowLayers.push(layer)
+  }
+  for (let i in rowLayers) {
+    let lyr = rowLayers[i]
+    a += player[lyr].unlocked
+  }
+  return (a == rowLayers.length)
 }
 
 function prodOfEff(...effects) {

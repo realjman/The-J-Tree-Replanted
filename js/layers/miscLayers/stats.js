@@ -55,6 +55,7 @@ addLayer('stats', {
             description: () => `${colored("Growth", "#000")}<br>
             Amount: ${format(player.g.points)}<br>
             Gain Formula: floor(${writeExp(format(0.8), "J-fragments / "+format(tmp.g.requires), 'rgba(0, 0, 0, 0.5)', true)})<br>
+            Total Multiplier: ${formatX(tmp.g.gainMult)}, ${formatPow(tmp.g.gainExp)}<br>
             Passive Gain Percentage: ${formatPercents(tmp.g.passiveGeneration)}<br>
             Passive Gain: ${format(getResetGain('g').mul(tmp.g.passiveGeneration))}/s<br><br>
 

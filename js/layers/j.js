@@ -25,7 +25,7 @@ addLayer("j", {
         if (hasMilestone('a', 1)) mult = mult.mul(milestoneEffect('a', 1))
         if (hasMilestone('d', 2)) mult = mult.mul(milestoneEffect('d', 2))
 
-        if (hasMilestone('a', 25)) mult = mult.mul(getAxisBoosts('y'))
+        if (hasMilestone('a', 24)) mult = mult.mul(getAxisBoosts('y'))
 
         mult = mult.mul(tmp.a.APEffect4)
         mult = mult.mul(tmp.g.plantEffect2)
@@ -208,10 +208,18 @@ addLayer("j", {
                 Currently: ${formatX(buyableEffect(this.layer, this.id))} ${writeSC(buyableEffect(this.layer, this.id),"1e100")}
                 ${!hasUpgrade('j', 21) && getBuyableAmount(this.layer, this.id).gte(3)?"An upgrade appeared in the Upgrades tab, you should go check it out.":""}
             `},
-            cost(x) {return simpleCost(x.scale(this.scalingStart(), this.scalingPower(), "L"), "EA", 10, 2, 1.5)},
+            cost(x) {
+                return simpleCost(x.scale(this.scalingStart(), this.scalingPower(), "L"), "EA", 10, 2, 1.5).div(this.costDivison())
+            },
+            costDivison() {
+                let div = E(1)
+                div = div.mul(timeEffects(2))
+
+                return div
+            },
             canAfford() {return player[this.layer].points.gte(this.cost())},
             buy() {
-                if (!hasMilestone('a', 5)) {
+                if (!hasMilestone('a', 6)) {
                     player[this.layer].points = player[this.layer].points.sub(this.cost())
                     setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
                 }
@@ -219,11 +227,19 @@ addLayer("j", {
             },
             buyMax() {
                 x = player[this.layer].points.add(1)
-                if (hasMilestone('a', 6)) {
-                    if (simpleCost(x, "EAI", 10, 2, 1.5).floor().gt(this.scalingStart())) {final = simpleCost(x, "EAI", 10, 2, 1.5).scale(this.scalingStart(), this.scalingPower(), "L", true).floor().add(1)}
-                    else {final = simpleCost(x, "EAI", 10, 2, 1.5).floor().add(1)}
-                    setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
+                if (simpleCost(x.mul(this.costDivison()), "EAI", 10, 2, 1.5).floor().gt(this.scalingStart())) {
+                    final = simpleCost(x
+                        .mul(this.costDivison()), "EAI", 10, 2, 1.5)
+                        .scale(this.scalingStart(), this.scalingPower(), "L", true)
+                        .floor()
+                        .add(1)
                 }
+                else {
+                    final = simpleCost(x, "EAI", 10, 2, 1.5)
+                        .floor()
+                        .add(1)
+                }
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
             },
             effect(x) {
                 return Decimal.pow(this.effectBase(), x.pow(this.effectExp())).softcap(this.scStart(), this.scPower(), 2)

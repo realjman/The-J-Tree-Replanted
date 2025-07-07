@@ -87,15 +87,6 @@ function formatTime(s) {
     else return formatWhole(Math.floor(s / 31536000)) + "y " + formatWhole(Math.floor(s / 86400) % 365) + "d " + formatWhole(Math.floor(s / 3600) % 24) + "h " + formatWhole(Math.floor(s / 60) % 60) + "m " + format(s % 60) + "s"
 }
 
-function formatDecimalTime(s) {
-    s = E(s)
-    if (s.lte(60)) return format(s) + "s"
-    else if (s.lte(3600)) return formatWhole(Decimal.floor(s.div(60))) + "m " + format(s.mod(60)) + "s"
-    else if (s.lte(86400)) return formatWhole(Decimal.floor(s.div(3600))) + "h " + formatWhole(Decimal.floor(s.div(60)).mod(60)) + "m " + format(s.mod(60)) + "s"
-    else if (s.lte(31536000)) return formatWhole(Decimal.floor(s.div(86400)).mod(365)) + "d " + formatWhole(Decimal.floor(s.div(3600)).mod(24)) + "h " + formatWhole(Decimal.floor(s.div(60)).mod(60)) + "m " + format(s.mod(60)) + "s"
-    else return formatWhole(Decimal.floor(s.div(31536000))) + "y " + formatWhole(Decimal.floor(s.div(86400)).mod(365)) + "d " + formatWhole(Decimal.floor(s.div(3600)).mod(24)) + "h " + formatWhole(Decimal.floor(s.div(60)).mod(60)) + "m " + format(s.mod(60)) + "s"
-}
-
 function toPlaces(x, precision, maxAccepted) {
     x = new Decimal(x)
     let result = x.toStringWithDecimalPlaces(precision)

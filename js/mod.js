@@ -80,6 +80,7 @@ function getPointMult() {
 		mult = mult.mul(tmp.g.treeEffect2)
 		mult = mult.mul(tmp.d.diceEffect2)
 		mult = mult.mul(tmp.s.effect)
+		mult = mult.mul(timeEffects(1))
 
 	return mult
 }

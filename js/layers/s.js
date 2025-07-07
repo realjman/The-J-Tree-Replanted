@@ -11,7 +11,7 @@ addLayer('s', {
     }},
     resetDescription: "Break the Space Continuum for ",
     color: "#bcb",
-    requires() {return E(40).add(Decimal.mul(player.s.unlockOrder, 8))}, // Can be a function that takes requirement increases into account
+    requires() {return rowAllUnlocked(2)?E(40):E(40).add(Decimal.mul(player.t.unlockOrder, 8))}, // Can be a function that takes requirement increases into account
     resource: "Space", // Name of prestige currency
     baseResource: "Abstract", // Name of resource prestige is based on
     baseAmount() {return player.a.points}, // Get the current amount of baseResource
@@ -32,15 +32,8 @@ addLayer('s', {
         return x.min(10).div(80).pow(1.1)
     },
 
-    get3DPlane() {
-        let x = buyableEffect('s', 21)
-        let y = buyableEffect('s', 22)
-        let z = buyableEffect('s', 23)
-
-        return [x, y, z]
-    },
     getSpaceVolume() {
-        let [x, y, z] = tmp.s.get3DPlane
+        let [x, y, z] = get3DPlane()
 
         return Decimal.mul(x, y).mul(z)
     },
@@ -115,14 +108,8 @@ addLayer('s', {
                 content: [
                     'h-line',
                     ['display-box', 3],
+                    ['display-box', 4],
                 ],
-            },
-            "Axis Boosting": {
-                content: [
-                    'h-line',
-                    ['display-box', 4]
-                ],
-                unlocked() {return hasMilestone('a', 24)},
             },
         }
     },
@@ -139,9 +126,10 @@ addLayer('s', {
         2: {
             title: () => colored("3D Plane", "#585"),
             description: () => {
-                let [x, y, z] = tmp.s.get3DPlane
+                let [x, y, z] = get3DPlane()
                 return `
-                    You are in a 3D Plane, which its size is ${colored(format(x)+" x "+format(y)+" x "+format(z), "#549153")}.<br> This means the volume inside the 3D plane is ${colored(format(tmp.s.getSpaceVolume), "#549153")} unit${superscript('3')}.
+                    You are in a 3D Plane, which its size is ${colored(format(x)+" x "+format(y)+" x "+format(z), "#549153")}.<br> This means the volume inside the 3D plane is ${colored(format(tmp.s.getSpaceVolume), "#549153")} unit${superscript('3')}.<br>
+                    ${color("Respecing does not reset anything.", 'rgba(0,0,0,0.3)', 'h5')}
                 `
             },
             color: () => tmp.s.color,
@@ -171,6 +159,7 @@ addLayer('s', {
                 `
             },
             color: () => tmp.s.color,
+            unlocked() {return hasMilestone('a', 24)},
         },
     },
     milestones: {
@@ -179,7 +168,8 @@ addLayer('s', {
             effectDescription: () => `
                 Keep the 1st, 9th, 15th ${colored("Abstract", tmp.a.color)} milestone on row 3 resets, ${colored("Less Scaling", "#000")} does not require ${colored("3 Abstract", tmp.a.color)}.<br>
                 ${(!hasMilestone('d', 1))?'<h6 style="color: rgba(0, 0, 0, 0.3)">You will unlock another effect when you have the first milestone from one of the other row 3 layers.</h6>':'Since you have the first milestone from one of the other row 3 layers, divide '+colored("Abstract", tmp.a.color)+" based on the volume of Space / 3D Plane."}<br>
-                Currently: ${rowMultipleUnlocked(2)?formatDiv(milestoneEffect('s', 1)):"[LOCKED]"}
+                Currently: ${rowMultipleUnlocked(2)?formatDiv(milestoneEffect('s', 1)):"[LOCKED]"}<br>
+                If you have all 3 layers on this row unlocked, remove the scaling of all row 3 layers.
             `,
             effect() {
                 let x = tmp.s.getSpaceVolume
@@ -331,10 +321,18 @@ addLayer('s', {
     },
 })
 
-function getAxisBoosts(axis) {
-    let [x, y, z] = tmp.s.get3DPlane
+function get3DPlane() {
+    let x = buyableEffect('s', 21)
+    let y = buyableEffect('s', 22)
+    let z = buyableEffect('s', 23)
 
-    if (!['x', 'y', 'z'].includes(axis) && hasMilestone('a', 24)) return E(1);
+    return [x, y, z]
+}
+
+function getAxisBoosts(axis) {
+    let [x, y, z] = get3DPlane()
+
+    if (!(['x', 'y', 'z'].includes(axis) && hasMilestone('a', 24))) return E(1);
 
     if (axis == 'x') return x.pow(0.7) // plants
     if (axis == 'y') return y.mul(0.5).add(1) // j-points

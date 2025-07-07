@@ -35,6 +35,16 @@ addLayer('g', {
     let exp = new Decimal(1)
     return exp
   },
+  globalPlantBoost() {
+    let gain = E(1)
+
+    if (hasMilestone('a', 24)) gain = gain.mul(getAxisBoosts('x'))
+    if (hasUpgrade('d', 21)) gain = gain.mul(upgradeEffect('d', 21))
+    gain = gain.mul(tmp.d.diceEffect1)
+    gain = gain.mul(timeEffects(4))
+
+    return gain
+  },
   seedGain() {
     let gain = E(0)
     gain = gain.add(buyableEffect("g", 11))
@@ -42,11 +52,10 @@ addLayer('g', {
     if (hasUpgrade(this.layer, 22)) gain = gain.mul(upgradeEffect(this.layer, 22))
 
     if (hasMilestone('a', 10)) gain = gain.mul(milestoneEffect('a', 10))
-    if (hasMilestone('a', 25)) gain = gain.mul(getAxisBoosts('x'))
 
     gain = gain.mul(tmp.g.plantEffect1)
     gain = gain.mul(tmp.a.APEffect6)
-    gain = gain.mul(tmp.d.diceEffect1)
+    gain = gain.mul(tmp.g.globalPlantBoost)
 
     return gain
   },
@@ -57,10 +66,8 @@ addLayer('g', {
     if (hasUpgrade(this.layer, 24)) gain = gain.mul(upgradeEffect(this.layer, 24))
     if (hasUpgrade(this.layer, 31)) gain = gain.mul(upgradeEffect(this.layer, 31))
 
-    if (hasMilestone('a', 25)) gain = gain.mul(getAxisBoosts('x'))
-
     gain = gain.mul(tmp.g.treeEffect1)
-    gain = gain.mul(tmp.d.diceEffect1)
+    gain = gain.mul(tmp.g.globalPlantBoost)
 
     return gain
   },
@@ -71,9 +78,7 @@ addLayer('g', {
     if (hasUpgrade(this.layer, 32)) gain = gain.mul(upgradeEffect(this.layer, 32))
     if (hasMilestone('a', 15)) gain = gain.mul(milestoneEffect('a', 15))
 
-    if (hasMilestone('a', 25)) gain = gain.mul(getAxisBoosts('x'))
-
-    gain = gain.mul(tmp.d.diceEffect1)
+    gain = gain.mul(tmp.g.globalPlantBoost)
 
     return gain
   },
@@ -83,9 +88,7 @@ addLayer('g', {
 
     if (hasUpgrade(this.layer, 33)) gain = gain.mul(upgradeEffect(this.layer, 33))
 
-    if (hasMilestone('a', 25)) gain = gain.mul(getAxisBoosts('x'))
-
-    gain = gain.mul(tmp.d.diceEffect1)
+    gain = gain.mul(tmp.g.globalPlantBoost)
 
     return gain
   },
@@ -371,8 +374,26 @@ addLayer('g', {
       cost(x) {return simpleCost(x.scale(this.scalingStart(), this.scalingPower(), "P"), "E", 5_000, 10)},
       canAfford() {return player[this.layer].points.gte(this.cost())},
       buy() {
-        player[this.layer].points = player[this.layer].points.sub(this.cost())
-        setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        if (!hasMilestone('t', 4)) {
+          player[this.layer].points = player[this.layer].points.sub(this.cost())
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        }
+        else this.buyMax()
+      },
+      buyMax() {
+        let x = player[this.layer].points.add(1)
+        if (simpleCost(x, "E", 5_000, 10).floor().gt(this.scalingStart())) {
+          final = simpleCost(x, "EI", 5_000, 10)
+            .scale(this.scalingStart(), this.scalingPower(), "P", true)
+            .floor()
+            .add(1)
+        }
+        else {
+          final = simpleCost(x, "EI", 5_000, 10)
+            .floor()
+            .add(1)
+        }
+        setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
       },
       effect(x) {
         effect = Decimal.pow(this.effectBase(), x.add(this.freeLevels())).sub(1)
@@ -419,8 +440,26 @@ addLayer('g', {
       cost(x) {return simpleCost(x.scale(this.scalingStart(), this.scalingPower(), "P"), "E", 1_000, 15)},
       canAfford() {return player[this.layer].seeds.gte(this.cost())},
       buy() {
-        player[this.layer].seeds = player[this.layer].seeds.sub(this.cost())
-        setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        if (!hasMilestone('t', 4)) {
+          player[this.layer].seeds = player[this.layer].seeds.sub(this.cost())
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        }
+        else this.buyMax()
+      },
+      buyMax() {
+        let x = player.g.seeds.add(1)
+        if (simpleCost(x, "EI", 1_000, 15).floor().gt(this.scalingStart())) {
+          final = simpleCost(x, "EI", 1_000, 15)
+            .scale(this.scalingStart(), this.scalingPower(), "P", true)
+            .floor()
+            .add(1)
+        }
+        else {
+          final = simpleCost(x, "EI", 1_000, 15)
+            .floor()
+            .add(1)
+        }
+        setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
       },
       effect(x) {
         effect = Decimal.pow(this.effectBase(), x.add(this.freeLevels())).sub(1)
@@ -465,8 +504,16 @@ addLayer('g', {
       cost(x) {return simpleCost(x, "E", 1_500, 20)},
       canAfford() {return player[this.layer].sprouts.gte(this.cost())},
       buy() {
-        player[this.layer].sprouts = player[this.layer].sprouts.sub(this.cost())
-        setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        if (!hasMilestone('t', 4)) {
+          player[this.layer].sprouts = player[this.layer].sprouts.sub(this.cost())
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        }
+        else this.buyMax()
+      },
+      buyMax() {
+        let x = player[this.layer].sprouts.add(1)
+          final = simpleCost(x, "EI", 1_500, 20).floor().add(1)
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
       },
       effect(x) {
         effect = Decimal.pow(this.effectBase(), x.add(this.freeLevels())).sub(1)
@@ -502,8 +549,16 @@ addLayer('g', {
       cost(x) {return simpleCost(x, "E", 5_000, 30)},
       canAfford() {return player[this.layer].plants.gte(this.cost())},
       buy() {
-        player[this.layer].plants = player[this.layer].plants.sub(this.cost())
-        setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        if (!hasMilestone('t', 4)) {
+          player[this.layer].points = player[this.layer].points.sub(this.cost())
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+        }
+        else this.buyMax()
+      },
+      buyMax() {
+        let x = player[this.layer].plants.add(1)
+          final = simpleCost(x, "EI", 5_000, 30).floor().add(1)
+          setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).max(final))
       },
       effect(x) {
         return Decimal.pow(this.effectBase(), x).sub(1)
@@ -549,6 +604,7 @@ addLayer('g', {
     let keptUpg = []
 
     if (layers[resettingLayer].row >= 2 && hasUpgrade("g", 35)) keptUpg.push(35)
+    if (layers[resettingLayer].row >= 2 && hasMilestone("t", 2)) keptUpg.push(11, 12, 13, 14, 15, 21)
 
     let keep = [keptUpg]
 
@@ -558,5 +614,5 @@ addLayer('g', {
   },
   componentStyles: {
     "display-boxes"() {return {'width' : '100%'}}
-},
+  },
 })
