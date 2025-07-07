@@ -129,7 +129,7 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: Ignore this, you are a goober<br> i still have not worked on time, ignore that layer please k thx`
+		return `Current Endgame: Ignore this, you are a goober<br> time is implemented, i just ran out of ideas help me`
 	}
 ]
 
