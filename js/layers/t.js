@@ -3,6 +3,7 @@ const EFFECT_PRICE = [
     E(300),
     E(6_000),
     E(200_000),
+    E(1e6),
 ]
 
 function formatDecimalTime(s, ac=2, type='s') {
@@ -25,6 +26,7 @@ addLayer('t', {
         time: new Decimal(0),
         unlockOrder: 0,
         resetTime: 0,
+        currentTime: E(0),
     }},
     resetDescription: "Break the Time Continuum for ",
     color: "#9f9",
@@ -49,6 +51,7 @@ addLayer('t', {
         let mul = E(1)
         mul = mul.mul(timeEffects(3))
         mul = mul.mul(buyableEffect('t', 12))
+        if (hasMilestone('a', 25)) mul = mul.mul(3)
 
         let gain = base.mul(mul)
 
@@ -71,10 +74,13 @@ addLayer('t', {
                 "prestige-button",
                 "resource-display",
                 ['display-box', 1],
+                ['display-box', 2],
                 'blank',
                 showBuyableInTF(11),
                 'blank',
                 showBuyableInTF(12),
+                'blank',
+                'upgrades',
             ],
         },
     },
@@ -96,6 +102,16 @@ addLayer('t', {
             `,
             color: () => tmp.t.color
         },
+        2: {
+            title: () => `Current Time`,
+            description: () => `
+                The current time is ${colored(formatCurrentTime(), "#6a6")}. ${shiftDown?"":"(Hold shift for AM/PM format)"}<br>
+                Day Time: 6AM - 7PM<br>
+                Night Time: 7PM - 6AM
+            `,
+            color: () => tmp.t.color,
+            unlocked: () => hasMilestone('a', 24)
+        }
     },
     milestones: {
         1: {
@@ -133,6 +149,14 @@ addLayer('t', {
             done() {return player.t.points.gte(4)},
             unlocked() {return hasMilestone('t', 2)},
         },
+        5: {
+            requirementDescription: `6 Condensed Time [5]`,
+            effectDescription: () => `
+                ${formatX("10")} to J-points gain
+            `,
+            done() {return player.t.points.gte(6)},
+            unlocked() {return hasMilestone('t', 3)},
+        },
     },
     buyables: {
         11: {
@@ -143,6 +167,7 @@ addLayer('t', {
                 if (getBuyableAmount('t', 11).gte(2)) h += `Divide the cost of ${color("Classical Tree Game", "#000")}. Currently: ${formatDiv(timeEffects(2))}<br>`
                 if (getBuyableAmount('t', 11).gte(3)) h += `Boosts time based on time. Currently: ${formatX(timeEffects(3))}<br>`
                 if (getBuyableAmount('t', 11).gte(4)) h += `Boosts all the plants based on time. Currently: ${formatX(timeEffects(4))}<br>`
+                if (getBuyableAmount('t', 11).gte(5)) h += `Increases the J-fragments exponent based on time. Currently: ${formatAdd(timeEffects(5))}<br>`
 
                 if (getBuyableAmount('t', 11).gte(1)) h += `${shiftDown?"":"(Hold shift for formulas)"}<br>`
                 h += `Cost: ${shiftDown?format(tmp.t.buyables[11].cost)+"s":formatDecimalTime(tmp.t.buyables[11].cost)} in time.`
@@ -187,12 +212,53 @@ addLayer('t', {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             unlocked() {return hasMilestone('a', 24)},
+            tooltip: () => `
+                Cost: 10${superscript('x')}<br>
+                Effect: ${writeExp(2, 'x')} + 1
+            `,
+        },
+    },
+    upgrades: {
+        11: {
+            title: () => `Photosynthesis and Transpiration`,
+            fullDisplay() {
+                return `
+                    ${color(this.title(), null, "h3")}<br>
+                    During the day, your current time boosts your all your plants.<br>
+                    During the night, your current time boosts J-fragments.<br>
+                    Currently: ${formatX(upgradeEffectInTime(11, 1))}, ${formatX(upgradeEffectInTime(11, 2))}<br><br>
+                    Cost: ${shiftDown?format(tmp.t.upgrades[11].cost)+"s":formatDecimalTime(tmp.t.upgrades[11].cost)} in time.
+                `
+            },
+            tooltip: () => `
+                Effects:<br>
+                Day: (Current Time * 3) + 1<br>
+                Night: ${writeExp(2, "Current Time", null, true)} + 1
+            `,
+            cost: E(1_000_000),
+            currencyInternalName: "time",
+            currencyLayer: "t",
+        },
+        12: {
+            title: () => `Faster Dice`,
+            fullDisplay() {
+                return `
+                    ${color(this.title(), null, "h3")}<br>
+                    ${formatDecimalTime(-1, 0, "s")} Dice cooldown time<br><br>
+                    Cost: ${shiftDown?format(tmp.t.upgrades[11].cost)+"s":formatDecimalTime(tmp.t.upgrades[11].cost)} in time.
+                `
+            },
+            cost: E(10_000_000),
+            currencyInternalName: "time",
+            currencyLayer: "t",
+            unlocked() {return hasUpgrade("t", 11)},
         },
     },
     update(diff) {
         timeGain = tmp.t.timeGain
 
         player.t.time = player.t.time.add(timeGain.mul(diff))
+        player.t.currentTime = calculateCurrentTime().add(diff)
     },
 })
 
@@ -201,6 +267,29 @@ function timeEffects(type) {
     if (getBuyableAmount('t', 11).gte(2) && type == 2) return player.t.time.div(10).add(1).pow(3)
     if (getBuyableAmount('t', 11).gte(3) && type == 3) return player.t.time.pow(1/3).div(10).add(1)
     if (getBuyableAmount('t', 11).gte(4) && type == 4) return player.t.time.add(1).log(100).add(1).pow(2)
+    if (getBuyableAmount('t', 11).gte(5) && type == 5) return player.t.time.add(1).log(10).pow(0.5).div(100)
+
+    return E(1)
+}
+
+function calculateCurrentTime(time=player.t.currentTime) {
+    return time.mod(24)
+}
+
+function calcDnNCurrentTime(day, time=player.t.currentTime) {
+    if (day) {return time.gt(6)&&time.lt(19)?time:E(0)}
+    else return !(time.gt(6)&&time.lt(19))?time:E(0)
+} 
+
+function formatCurrentTime(time=player.t.currentTime) {
+    return shiftDown?`${format(Decimal.floor(time.lt(1)||(time.lt(13)&&time.gt(12))?time.mod(12).add(12):time.mod(12)), 0)}:${format(time.mod(1).mul(60).floor(), 0)} ${time.gt(12)&&time.lt(24)?"PM":"AM"}`:`${format(Decimal.floor(time), 0)}:${format(time.mod(1).mul(60).floor(), 0)}`
+}
+
+function upgradeEffectInTime(upg, type) {
+    if (upg == 11) {
+        if (type == 1) return calcDnNCurrentTime(true).mul(3).add(1)
+        if (type == 2) return calcDnNCurrentTime(false).pow(2).max(10)
+    }
 
     return E(1)
 }

@@ -203,6 +203,14 @@ addLayer('s', {
             done() {return player.s.points.gte(4)},
             unlocked() {return hasMilestone('s', 2)},
         },
+        5: {
+            requirementDescription: `6 Space [5]`,
+            effectDescription: () => `
+                ${colored("Classical Tree Game", "#000")}'s level exponent is ${formatAdd(0.02)}
+            `,
+            done() {return player.s.points.gte(6)},
+            unlocked() {return hasMilestone('s', 3)},
+        },
     },
     buyables: {
         respec() {

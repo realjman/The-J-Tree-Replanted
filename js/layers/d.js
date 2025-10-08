@@ -8,6 +8,7 @@ addLayer('d', {
         unlockOrder: 0,
         fragments: E(0),
         goldenFragments: E(0),
+        gDiceFragCD: E(0),
 
         diceCD: E(0),
         lastDiceValue: E(0),
@@ -37,6 +38,7 @@ addLayer('d', {
         let x = E(5)
         if (hasMilestone('d', 2)) x = x.sub(1)
         if (hasUpgrade('d', 14)) x = x.sub(1)
+        if (hasUpgrade('t', 12)) x = x.sub(1)
         return x
     },
     diceEffect1() {
@@ -53,6 +55,7 @@ addLayer('d', {
         if (hasUpgrade(this.layer, 11)) x = x.mul(upgradeEffect(this.layer, 11))
         if (hasUpgrade(this.layer, 13)) x = x.mul(upgradeEffect(this.layer, 13))
         if (hasUpgrade(this.layer, 15)) x = x.mul(upgradeEffect(this.layer, 15))
+        if (hasMilestone('a', 25)) x = x.mul(3)
         return x
     },
 
@@ -62,6 +65,10 @@ addLayer('d', {
     },
     gDiceGain() {
         let x = E(1)
+        return x
+    },
+    gDiceGainCD() {
+        let x = E(60)
         return x
     },
     layerShown() {return hasUpgrade('g', 35) || player.t.unlocked || player.d.unlocked},
@@ -182,6 +189,14 @@ addLayer('d', {
             done() {return player.d.points.gte(4)},
             unlocked() {return hasMilestone('d', 2)},
         },
+        5: {
+            requirementDescription: `6 Dice Power [5]`,
+            effectDescription: () => `
+                +^${format(0.02)} to the ${colored("J-point", tmp.j.color)} gain exponent
+            `,
+            done() {return player.d.points.gte(6)},
+            unlocked() {return hasMilestone('d', 3)},
+        },
     },
     clickables: {
         11: {
@@ -198,7 +213,17 @@ addLayer('d', {
                     if (rollGDice(tmp.d.gDiceChance)) player.d.goldenFragments = player.d.goldenFragments.add(tmp.d.gDiceGain)
                 }
             }
-        }
+        },
+        12: {
+            title: () => `Gain golden dice fragments`,
+            display() {return `<h1>${format(tmp.d.gDiceGain)}</h1><br> Cooldown: ${formatDecimalTime(player.d.gDiceFragCD)}`},
+            unlocked() {return hasMilestone('a', 24)},
+            canClick() {return player.d.gDiceFragCD.lte(0) && hasMilestone('a', 24)},
+            onClick() {
+                player.d.gDiceFragCD = tmp.d.gDiceGainCD
+                player.d.goldenFragments = player.d.goldenFragments.add(tmp.d.gDiceGain)
+            }
+        },
     },
     upgrades: {
         11: {
@@ -302,6 +327,7 @@ addLayer('d', {
     },
     update(diff) {
         player.d.diceCD = player.d.diceCD.sub(diff).clampMin(0)
+        player.d.gDiceFragCD = player.d.gDiceFragCD.sub(diff).clampMin(0)
     },
 })
 

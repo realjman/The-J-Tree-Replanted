@@ -13,7 +13,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.3 testing patch 2",
+	num: "0.3 testing patch 3",
 	name: "so goober",
 }
 
@@ -71,6 +71,7 @@ function getPointMult() {
 		if (hasUpgrade('j', 12)) mult = mult.mul(upgradeEffect('j', 12))
 		if (hasUpgrade('j', 15)) mult = mult.mul(2)
 		if (hasUpgrade('j', 33)) mult = mult.mul(upgradeEffect('j', 33))
+		if (hasUpgrade("t", 11)) mult = mult.mul(upgradeEffectInTime(11, 2))
 	
 	// Buyables
 		if (getBuyableAmount('j', 11).gte(1)) mult = mult.mul(buyableEffect('j', 11))
@@ -99,6 +100,7 @@ function getPointExp() {
 
 	// Others
 	exp = exp.add(tmp.s.effectExp)
+	if (getBuyableAmount("t", 11).gte(5)) exp = exp.add(buyableEffect("t", 11))
 
 	return exp
 }
@@ -129,7 +131,7 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: Ignore this, you are a goober<br> time is implemented, i just ran out of ideas help me`
+		return `Current Endgame: Ignore this, you are a goober<br> smots gaming`
 	}
 ]
 

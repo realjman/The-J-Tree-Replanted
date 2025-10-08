@@ -24,6 +24,7 @@ addLayer("j", {
         if (hasUpgrade(this.layer, 23)) mult = mult.mul(upgradeEffect(this.layer, 23))
         if (hasMilestone('a', 1)) mult = mult.mul(milestoneEffect('a', 1))
         if (hasMilestone('d', 2)) mult = mult.mul(milestoneEffect('d', 2))
+        if (hasMilestone('t', 5)) mult = mult.mul(10)
 
         if (hasMilestone('a', 24)) mult = mult.mul(getAxisBoosts('y'))
 
@@ -35,6 +36,7 @@ addLayer("j", {
     gainExp() { // Calculate the exponent on main currency from bonuses
         exp = E(1)
         if (hasMilestone('a', 20)) exp = exp.add(0.01)
+        if (hasMilestone('d', 5)) exp = exp.add(0.01)
         return exp
     },
     passive() {
@@ -193,6 +195,7 @@ addLayer("j", {
                 let exp = new Decimal(1)
                 if (hasUpgrade(this.layer, 22)) exp = exp.add(0.01)
                 if (hasMilestone('a', 11)) exp = exp.add(0.01)
+                if (hasMilestone('s', 5)) exp = exp.add(0.02)
                 return exp
             },
             effectBase() {
@@ -256,6 +259,7 @@ addLayer("j", {
             },
             scStart() {
                 let start = E(1e100)
+                if (hasMilestone('a', 26)) start = start.mul("e10")
                 return start
             },
             scPower() {

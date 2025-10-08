@@ -347,6 +347,29 @@ addLayer("a", {
       done() {return player[this.layer].points.gte(50)},
       unlocked() {return hasMilestone(this.layer, 22)||hasMilestone(this.layer, 24)},
     },
+    25: {
+      requirementDescription: "55 Abstracts",
+      effectDescription: () => `Multiply ${colored("Time", tmp.t.color)} and ${colored("Dice Fragments", tmp.d.color)} by 3`,
+      done() {return player[this.layer].points.gte(55)},
+      unlocked() {return hasMilestone(this.layer, 23)||hasMilestone(this.layer, 25)},
+    },
+    26: {
+      requirementDescription: "60 Abstracts",
+      effectDescription: () => `${colored("Classical Tree Game", "#000")}'s softcap starts ${formatX("e10")} later`,
+      done() {return player[this.layer].points.gte(60)},
+      unlocked() {return hasMilestone(this.layer, 24)||hasMilestone(this.layer, 26)},
+    },
+    27: {
+      requirementDescription: "61 Abstracts",
+      effectDescription: () => `Abstract Power gain is multiplied based on J-fragments. Currently: ${formatX(milestoneEffect("a", 27))}`,
+      done() {return player[this.layer].points.gte(60)},
+      effect() {
+        x = player.points
+        return Decimal.log(x.add(1), 10).div(50).add(1)
+      },
+      tooltip: () => `Effect: (${writeLog(formatWhole(10), "x + 1")} + 1) / 10`,
+      unlocked() {return hasMilestone(this.layer, 25)||hasMilestone(this.layer, 27)},
+    },
   },
   buyables: {
     11: {

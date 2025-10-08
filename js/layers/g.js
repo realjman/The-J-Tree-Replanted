@@ -40,6 +40,7 @@ addLayer('g', {
 
     if (hasMilestone('a', 24)) gain = gain.mul(getAxisBoosts('x'))
     if (hasUpgrade('d', 21)) gain = gain.mul(upgradeEffect('d', 21))
+    if (hasUpgrade('t', 11)) gain = gain.mul(upgradeEffectInTime(11, 1))
     gain = gain.mul(tmp.d.diceEffect1)
     gain = gain.mul(timeEffects(4))
 
@@ -313,7 +314,7 @@ addLayer('g', {
       tooltip: () => `Effect: 1 + ${writeLog("4", "Plants + 1")}`,
     },
     32: {
-      title: "Xilem",
+      title: "Xylem",
       description: function() {return `Growth gives a boost to plants at reduced rate.`},
       effect() {
         x = player.g.points
