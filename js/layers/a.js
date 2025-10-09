@@ -10,6 +10,8 @@ addLayer("a", {
     best: new Decimal(0),
     power: E(0),
     resetTime: 0,
+
+    autoBuyable: false,
   }},
   resetDescription: "The abstractive layer contaminates all your previous progress into ",
   color: "#9ae479",
@@ -56,6 +58,7 @@ addLayer("a", {
     let mult = E(1)
 
     if (hasMilestone(this.layer, 2)) mult = mult.mul(milestoneEffect(this.layer, 2))
+    if (hasMilestone(this.layer, 27)) mult = mult.mul(milestoneEffect(this.layer, 27))
     mult = mult.mul(tmp[this.layer].APEffect3)
     if (hasUpgrade('g', 14)) mult = mult.mul(upgradeEffect('g', 14))
     if (getBuyableAmount('a', 12).gte(1)) mult = mult.mul(buyableEffect('a', 12))
@@ -479,7 +482,40 @@ addLayer("a", {
 
     player[this.layer].power = player[this.layer].power.add(apGen.mul(diff))
   },
-  /*doReset(resettingLayer) {
+  resetsNothing() {
+    return hasMilestone('s', 6)
+  },
+  automate() {
+    if (hasMilestone('t', 6) && player[this.layer].autoBuyable) {buyMaxBuyable(this.layer, 11); buyMaxBuyable(this.layer, 12)}
+  },
+  doReset(resettingLayer) {
+    if (layers[resettingLayer].row <= this.row) {
+      if (layers[resettingLayer].layer != "a" && !hasUpgrade('g', 25)) player[this.layer].power = E(0)
+      return;
+    };
+
+    let keptMS = []
+    let keepAB = false
+
+    if (layers[resettingLayer].row == 2) {
+      if (hasMilestone(resettingLayer, 1)) keptMS.push(0, 8, 14)
+      if (hasMilestone(resettingLayer, 3)) keptMS.push(3, 4, 5, 6)
+    }
+
+    if (hasMilestone('a', 24)) keptMS.push(24)
+
+    if (layers[resettingLayer].row >= 1 && hasMilestone('t', 6) && player[this.layer].autoBuyable) keepAB = true
+
+    let keep = [keptMS, keepAB]
+
+    layerDataReset(this.layer, keep)
+
+    player[this.layer].autoBuyable = keep[1]
+    player.a.milestones.push(...keptMS)
+  },
+})
+
+/*doReset(resettingLayer) {
     // Stage 1, almost always needed, makes resetting this layer not delete your progress
     if (layers[resettingLayer].row <= this.row) return;
 
@@ -497,25 +533,3 @@ addLayer("a", {
     // Stage 5, add back in the specific subfeatures you saved earlier
     player[this.layer].upgrades.push(...keptUpgrades)
   }*/
-  doReset(resettingLayer) {
-    if (layers[resettingLayer].row <= this.row) {
-      if (layers[resettingLayer].layer != "a" && !hasUpgrade('g', 25)) player[this.layer].power = E(0)
-      return;
-    };
-
-    let keptMS = []
-
-    if (layers[resettingLayer].row == 2) {
-      if (hasMilestone(resettingLayer, 1)) keptMS.push(0, 8, 14)
-      if (hasMilestone(resettingLayer, 3)) keptMS.push(3, 4, 5, 6)
-    }
-
-    if (hasMilestone('a', 24)) keptMS.push(24)
-
-    let keep = [keptMS]
-
-    layerDataReset(this.layer, keep)
-
-    player.a.milestones.push(...keptMS)
-  },
-})

@@ -211,6 +211,14 @@ addLayer('s', {
             done() {return player.s.points.gte(6)},
             unlocked() {return hasMilestone('s', 3)},
         },
+        6: {
+            requirementDescription: `7 Space`,
+            effectDescription: () => `
+                Abstract resets nothing.
+            `,
+            done() {return player.s.points.gte(7)},
+            unlocked() {return hasMilestone('s', 4)},
+        },
     },
     buyables: {
         respec() {

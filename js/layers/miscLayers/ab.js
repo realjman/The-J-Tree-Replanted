@@ -21,7 +21,37 @@ addLayer('ab', {
                 else {player.j.autoBuyable = true}
             },
             style: {
-                "background-color": "#aba"
+                "background-color": () => tmp.j.color
+            },
+        },
+        12: {
+            title: "Abstract Buyables Autobuyer",
+            display() {return `${player.a.autoBuyable ? "ON" : "OFF"}`},
+            canClick() {return true},
+            onClick() {
+                if (player.a.autoBuyable) {player.a.autoBuyable = false}
+                else {player.a.autoBuyable = true}
+            },
+            style: {
+                "background-color": () => tmp.a.color
+            },
+            unlocked() {
+                return hasMilestone('t', 6)
+            },
+        },
+        13: {
+            title: "Plant Generation Autobuyers",
+            display() {return `${player.g.autoBuyable ? "ON" : "OFF"}`},
+            canClick() {return true},
+            onClick() {
+                if (player.g.autoBuyable) {player.g.autoBuyable = false}
+                else {player.g.autoBuyable = true}
+            },
+            style: {
+                "background-color": () => tmp.g.color
+            },
+            unlocked() {
+                return hasMilestone('d', 6)
             },
         },
     },

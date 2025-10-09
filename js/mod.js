@@ -3,7 +3,7 @@ let modInfo = {
 	id: "tjtrr",
 	author: "realjman",
 	pointsName: "J-fragments",
-	modFiles: ["layers/j.js", "layers/a.js", "layers/g.js", "layers/t.js", "layers/d.js", "layers/s.js", "tree.js", "layers/miscLayers/ab.js", "layers/miscLayers/stats.js"],
+	modFiles: ["layers/j.js", "layers/a.js", "layers/g.js", "layers/t.js", "layers/d.js", "layers/s.js", "layers/l.js", "tree.js", "layers/miscLayers/ab.js", "layers/miscLayers/stats.js"],
 
 	discordName: "extrem j server",
 	discordLink: "https://discord.gg/UUyR82mzMG/",
@@ -13,7 +13,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.3 testing patch 3",
+	num: "0.3 testing patch 4",
 	name: "so goober",
 }
 
@@ -93,6 +93,7 @@ function getPointExp() {
 	// Upgrades
 	if (hasUpgrade('j', 32)) exp = exp.add(0.01)
 	if (hasUpgrade('d', 12)) exp = exp.add(upgradeEffect('d', 12))
+	if (hasUpgrade('d', 23)) exp = exp.add(upgradeEffect('d', 23))
 
 	// Milestones
 	if (hasMilestone('a', 9)) exp = exp.add(0.01)
@@ -131,7 +132,7 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: Ignore this, you are a goober<br> smots gaming`
+		return `Current Endgame: Ignore this, you are a goober<br> dont do life reset yet, not implemented. <br>smots gaming`
 	}
 ]
 

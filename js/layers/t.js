@@ -157,6 +157,15 @@ addLayer('t', {
             done() {return player.t.points.gte(6)},
             unlocked() {return hasMilestone('t', 3)},
         },
+        6: {
+            requirementDescription: `7 Condensed Time`,
+            effectDescription: () => `
+                Autobuys the two ${colored("Abstract", tmp.a.color)} buyables.
+            `,
+            done() {return player.t.points.gte(7)},
+            unlocked() {return hasMilestone('t', 4)},
+            toggles: [['a', 'autoBuyable']],
+        },
     },
     buyables: {
         11: {
@@ -164,10 +173,10 @@ addLayer('t', {
             display: () => {
                 let h = `Each purchase of the buyable grants an effect.<br>`
                 if (getBuyableAmount('t', 11).gte(1)) h += `Boost J-fragments based on time. Currently: ${formatX(timeEffects(1))} ${shiftDown?"["+writeLog(10, "x + 1")+superscript(2)+" + 1]":""}<br>`
-                if (getBuyableAmount('t', 11).gte(2)) h += `Divide the cost of ${color("Classical Tree Game", "#000")}. Currently: ${formatDiv(timeEffects(2))}<br>`
-                if (getBuyableAmount('t', 11).gte(3)) h += `Boosts time based on time. Currently: ${formatX(timeEffects(3))}<br>`
-                if (getBuyableAmount('t', 11).gte(4)) h += `Boosts all the plants based on time. Currently: ${formatX(timeEffects(4))}<br>`
-                if (getBuyableAmount('t', 11).gte(5)) h += `Increases the J-fragments exponent based on time. Currently: ${formatAdd(timeEffects(5))}<br>`
+                if (getBuyableAmount('t', 11).gte(2)) h += `Divide the cost of ${color("Classical Tree Game", "#000")}. Currently: ${formatDiv(timeEffects(2))} ${shiftDown?"["+writeExp(3, "(x / 10) + 1", null, true)+"]":""}<br>`
+                if (getBuyableAmount('t', 11).gte(3)) h += `Boosts time based on time. Currently: ${formatX(timeEffects(3))} ${shiftDown?"[("+writeExp(1/3, "x")+" / 10) + 1]":""}<br>` // player.t.time.add(1).log(100).add(1).pow(2)
+                if (getBuyableAmount('t', 11).gte(4)) h += `Boosts all the plants based on time. Currently: ${formatX(timeEffects(4))} ${shiftDown?"["+writeExp(2, writeLog(100, "x + 1")+" + 1", null, true)+"]":""}<br>`
+                if (getBuyableAmount('t', 11).gte(5)) h += `Increases the J-fragments exponent based on time. Currently: ${formatAdd(timeEffects(5))} ${shiftDown?"["+writeExp(0.5, writeLog(10, "x + 1"), null, true)+" / 100]":""}<br>` // player.t.time.add(1).log(10).pow(0.5).div(100)
 
                 if (getBuyableAmount('t', 11).gte(1)) h += `${shiftDown?"":"(Hold shift for formulas)"}<br>`
                 h += `Cost: ${shiftDown?format(tmp.t.buyables[11].cost)+"s":formatDecimalTime(tmp.t.buyables[11].cost)} in time.`

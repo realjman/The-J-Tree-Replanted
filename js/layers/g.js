@@ -12,6 +12,8 @@ addLayer('g', {
     plants: E(0),
     trees: E(0),
     resetTime: 0,
+
+    autoBuyables: false,
   }},
   resetDescription: "Your fragments causes the tree slowly branch out to produce ",
   color: "#618968",
@@ -603,11 +605,14 @@ addLayer('g', {
     if (layers[resettingLayer].row <= this.row) return;
 
     let keptUpg = []
+    let keepAB = false
 
     if (layers[resettingLayer].row >= 2 && hasUpgrade("g", 35)) keptUpg.push(35)
     if (layers[resettingLayer].row >= 2 && hasMilestone("t", 2)) keptUpg.push(11, 12, 13, 14, 15, 21)
 
-    let keep = [keptUpg]
+    if (layers[resettingLayer].row >= 2 && hasMilestone("t", 6)) keepAB = true
+
+    let keep = [keptUpg, keepAB]
 
     layerDataReset(this.layer, keep)
 
@@ -615,5 +620,8 @@ addLayer('g', {
   },
   componentStyles: {
     "display-boxes"() {return {'width' : '100%'}}
+  },
+  automate() {
+    if (hasMilestone('d', 6) && player[this.layer].autoBuyable) {buyMaxBuyable(this.layer, 11); buyMaxBuyable(this.layer, 12); buyMaxBuyable(this.layer, 13); buyMaxBuyable(this.layer, 14)}
   },
 })

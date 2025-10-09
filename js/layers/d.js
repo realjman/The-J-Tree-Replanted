@@ -197,6 +197,15 @@ addLayer('d', {
             done() {return player.d.points.gte(6)},
             unlocked() {return hasMilestone('d', 3)},
         },
+        6: {
+            requirementDescription: `7 Dice Power`,
+            effectDescription: () => `
+                Autobuys all the Plant Generation buyables.
+            `,
+            done() {return player.d.points.gte(7)},
+            unlocked() {return hasMilestone('d', 4)},
+            toggles: [['g', 'autoBuyable']]
+        },
     },
     clickables: {
         11: {
@@ -307,7 +316,7 @@ addLayer('d', {
             currencyDisplayName: "Golden Dice Fragments",
             currencyInternalName: "goldenFragments",
             currencyLayer: "d",
-            unlocked() {return hasUpgrade(this.layer, 14)&&hasMilestone('a', 24)},
+            unlocked() {return hasUpgrade(this.layer, 15)&&hasMilestone('a', 24)},
         },
         22: {
             title: "Abstract Gold",
@@ -322,7 +331,22 @@ addLayer('d', {
             currencyDisplayName: "Golden Dice Fragments",
             currencyInternalName: "goldenFragments",
             currencyLayer: "d",
-            unlocked() {return hasUpgrade(this.layer, 14)&&hasMilestone('a', 24)},
+            unlocked() {return hasUpgrade(this.layer, 21)&&hasMilestone('a', 24)},
+        },
+        23: {
+            title: "Exponential Dice",
+            description: () => `J-fragments exponent is added based on highest roll.`,
+            cost: E(20_000),
+            effect() {
+                let x = player.d.highestRoll
+                return Decimal.log(x.add(1), 10).div(20)
+            },
+            effectDisplay() {return formatAdd(upgradeEffect(this.layer, this.id))},
+            tooltip: () => `Effect: ${writeLog(10, "x + 1")} / 20`,
+            currencyDisplayName: "Dice Fragments",
+            currencyInternalName: "fragments",
+            currencyLayer: "d",
+            unlocked() {return hasUpgrade(this.layer, 22)&&hasMilestone('a', 24)},
         },
     },
     update(diff) {
