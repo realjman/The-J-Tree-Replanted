@@ -29,6 +29,8 @@ addLayer('g', {
     if (hasMilestone('a', 7)) mult = mult.mul(milestoneEffect('a', 7))
     if (hasMilestone('a', 8)) mult = mult.mul(tmp.a.APEffect5)
     
+    if (hasMilestone('l', 1)) mult = mult.mul(10)
+    
       mult = mult.mul(tmp.s.volumeEffect2)
 
     return mult
@@ -41,6 +43,7 @@ addLayer('g', {
     let gain = E(1)
 
     if (hasMilestone('a', 24)) gain = gain.mul(getAxisBoosts('x'))
+    if (hasMilestone('l', 1)) gain = gain.mul(3)
     if (hasUpgrade('d', 21)) gain = gain.mul(upgradeEffect('d', 21))
     if (hasUpgrade('t', 11)) gain = gain.mul(upgradeEffectInTime(11, 1))
     gain = gain.mul(tmp.d.diceEffect1)
@@ -610,7 +613,7 @@ addLayer('g', {
     if (layers[resettingLayer].row >= 2 && hasUpgrade("g", 35)) keptUpg.push(35)
     if (layers[resettingLayer].row >= 2 && hasMilestone("t", 2)) keptUpg.push(11, 12, 13, 14, 15, 21)
 
-    if (layers[resettingLayer].row >= 2 && hasMilestone("t", 6)) keepAB = true
+    if (layers[resettingLayer].row >= 2 && player[this.layer].keepAB) keepAB = true
 
     let keep = [keptUpg, keepAB]
 

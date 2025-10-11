@@ -290,11 +290,11 @@ addLayer('d', {
         },
         15: {
             title: "Collect my dices...",
-            description: () => `Your golden dice fragments boosts dice fragments.`,
+            description: () => `Your golden dice fragments boosts dice fragments. (Hardcapped at ${formatX(10)})`,
             cost: E(1),
             effect() {
                 let x = player.d.goldenFragments
-                return x.pow_base(1.025)
+                return x.pow_base(1.025).min(10)
             },
             effectDisplay() {return formatX(upgradeEffect(this.layer, this.id), 3)},
             tooltip: () => `Effect: ${writeExp('x', "1.025")}`,
@@ -353,6 +353,26 @@ addLayer('d', {
         player.d.diceCD = player.d.diceCD.sub(diff).clampMin(0)
         player.d.gDiceFragCD = player.d.gDiceFragCD.sub(diff).clampMin(0)
     },
+    
+    doReset(resettingLayer) {
+        if (layers[resettingLayer].row <= this.row) {
+            return;
+        };
+
+        let keptMS = []
+
+        if (layers[resettingLayer].row == 3) {
+            if (hasMilestone("l", 1)) keptMS.push(1, 3)
+        }
+
+        let keep = [keptMS]
+
+        layerDataReset(this.layer, keep)
+
+        player[this.layer].milestones.push(...keptMS)
+    },
+
+    canBuyMax() {return hasMilestone('l', 3)},
 })
 
 function rollDice(max) {

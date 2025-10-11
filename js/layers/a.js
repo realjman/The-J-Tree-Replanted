@@ -12,6 +12,7 @@ addLayer("a", {
     resetTime: 0,
 
     autoBuyable: false,
+    autoAbstract: false,
   }},
   resetDescription: "The abstractive layer contaminates all your previous progress into ",
   color: "#9ae479",
@@ -25,6 +26,7 @@ addLayer("a", {
   effectDiv() {
     let div = E(20)
     if (hasMilestone(this.layer, 5)) div = div.sub(4)
+    if (hasMilestone(this.layer, 28)) div = div.sub(6)
     return div
   },
   effect() {
@@ -46,6 +48,7 @@ addLayer("a", {
   },
   gainExp() {
     let exp = new Decimal(1)
+    if (hasMilestone('l', 1)) exp = exp.mul(0.99)
     return exp
   },
   baseAPGen() {
@@ -59,6 +62,7 @@ addLayer("a", {
 
     if (hasMilestone(this.layer, 2)) mult = mult.mul(milestoneEffect(this.layer, 2))
     if (hasMilestone(this.layer, 27)) mult = mult.mul(milestoneEffect(this.layer, 27))
+    if (hasMilestone("l", 1)) mult = mult.mul(3)
     mult = mult.mul(tmp[this.layer].APEffect3)
     if (hasUpgrade('g', 14)) mult = mult.mul(upgradeEffect('g', 14))
     if (getBuyableAmount('a', 12).gte(1)) mult = mult.mul(buyableEffect('a', 12))
@@ -373,6 +377,13 @@ addLayer("a", {
       tooltip: () => `Effect: (${writeLog(formatWhole(10), "x + 1")} + 1) / 10`,
       unlocked() {return hasMilestone(this.layer, 25)||hasMilestone(this.layer, 27)},
     },
+    28: {
+      requirementDescription: "75 Abstracts",
+      effectDescription: () => `Abstract effect is better again.`,
+      done() {return player[this.layer].points.gte(60)},
+      tooltip: () => `Abstract / 16 => Abstract / 10`,
+      unlocked() {return (hasMilestone(this.layer, 26)||hasMilestone(this.layer, 28))&&hasMilestone('l', 3)},
+    },
   },
   buyables: {
     11: {
@@ -485,9 +496,14 @@ addLayer("a", {
   resetsNothing() {
     return hasMilestone('s', 6)
   },
+
   automate() {
     if (hasMilestone('t', 6) && player[this.layer].autoBuyable) {buyMaxBuyable(this.layer, 11); buyMaxBuyable(this.layer, 12)}
   },
+  autoPrestige() {
+    return hasMilestone('l', 2) && player[this.layer].autoAbstract
+  },
+
   doReset(resettingLayer) {
     if (layers[resettingLayer].row <= this.row) {
       if (layers[resettingLayer].layer != "a" && !hasUpgrade('g', 25)) player[this.layer].power = E(0)
@@ -496,21 +512,27 @@ addLayer("a", {
 
     let keptMS = []
     let keepAB = false
+    let keepAA = false
 
     if (layers[resettingLayer].row == 2) {
       if (hasMilestone(resettingLayer, 1)) keptMS.push(0, 8, 14)
       if (hasMilestone(resettingLayer, 3)) keptMS.push(3, 4, 5, 6)
     }
+    if (layers[resettingLayer].row >= 3) {
+      if (hasMilestone("l", 1)) keptMS.push(0, 8, 14, 3, 4, 5, 6)
+    }
 
     if (hasMilestone('a', 24)) keptMS.push(24)
 
-    if (layers[resettingLayer].row >= 1 && hasMilestone('t', 6) && player[this.layer].autoBuyable) keepAB = true
+    if (layers[resettingLayer].row >= 1  && player[this.layer].autoBuyable) keepAB = true
+    if (layers[resettingLayer].row >= 1  && player[this.layer].autoAbstract) keepAA = true
 
-    let keep = [keptMS, keepAB]
+    let keep = [keptMS, keepAB, keepAA]
 
     layerDataReset(this.layer, keep)
 
     player[this.layer].autoBuyable = keep[1]
+    player[this.layer].autoAbstract = keep[2]
     player.a.milestones.push(...keptMS)
   },
 })

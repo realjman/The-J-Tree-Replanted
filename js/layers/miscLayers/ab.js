@@ -23,6 +23,9 @@ addLayer('ab', {
             style: {
                 "background-color": () => tmp.j.color
             },
+            unlocked() {
+                return hasMilestone('a', 6)
+            },
         },
         12: {
             title: "Abstract Buyables Autobuyer",
@@ -54,6 +57,21 @@ addLayer('ab', {
                 return hasMilestone('d', 6)
             },
         },
+        21: {
+            title: "Auto Abstract",
+            display() {return `${player.a.autoAbstract ? "ON" : "OFF"}`},
+            canClick() {return true},
+            onClick() {
+                if (player.a.autoAbstract) {player.a.autoAbstract = false}
+                else {player.a.autoAbstract = true}
+            },
+            style: {
+                "background-color": () => tmp.a.color
+            },
+            unlocked() {
+                return hasMilestone('l', 2)
+            },
+        },
     },
-    layerShown() {return hasMilestone("a", 6)}
+    layerShown() {return true},
 })

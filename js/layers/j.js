@@ -25,6 +25,8 @@ addLayer("j", {
         if (hasMilestone('a', 1)) mult = mult.mul(milestoneEffect('a', 1))
         if (hasMilestone('d', 2)) mult = mult.mul(milestoneEffect('d', 2))
         if (hasMilestone('t', 5)) mult = mult.mul(10)
+        if (hasMilestone('l', 1)) mult = mult.mul(10)
+        if (hasMilestone('l', 3)) mult = mult.mul(milestoneEffect("l", 3))
 
         if (hasMilestone('a', 24)) mult = mult.mul(getAxisBoosts('y'))
 
@@ -260,6 +262,7 @@ addLayer("j", {
             scStart() {
                 let start = E(1e100)
                 if (hasMilestone('a', 26)) start = start.mul("e10")
+                if (hasMilestone('l', 2)) start = start.mul("e10")
                 return start
             },
             scPower() {
@@ -313,11 +316,12 @@ addLayer("j", {
         if (layers[resettingLayer].layer == "g" && hasUpgrade('g', 12)) keptUpg.push(11, 12, 13, 14, 15, 21, 22, 23, 24)
         if (layers[resettingLayer].layer == "g" && hasUpgrade('g', 13)) keptUpg.push(31, 32, 33, 34, 35)
 
-        if (layers[resettingLayer].row == 2) {
+        if (layers[resettingLayer].row >= 2) {
+            if (layers[resettingLayer].row >= 3) keptUpg = player[this.layer].upgrades
             if (hasMilestone(resettingLayer, 3)) keptUpg = player[this.layer].upgrades
         }
 
-        if (layers[resettingLayer].row >= 1 && hasMilestone('a', 6) && player[this.layer].autoBuyable) keepAB = true
+        if (layers[resettingLayer].row >= 1 && player[this.layer].autoBuyable) keepAB = true
 
         let keep = [keptUpg, keepAB]
 
@@ -325,7 +329,7 @@ addLayer("j", {
 
         player[this.layer].upgrades.push(...keptUpg)
         player[this.layer].autoBuyable = keep[1]
-        if ((layers[resettingLayer].layer == "a" && hasMilestone('a', 4))||(layers[resettingLayer].layer >= 2 && (hasMilestone('d', 3)||hasMilestone('t', 3)||hasMilestone('s', 3)))) setBuyableAmount(this.layer, 11, getBuyableAmount(this.layer, 11).add(3))
+        if ((layers[resettingLayer].layer == "a" && hasMilestone('a', 4))||(layers[resettingLayer].layer >= 2 && ((hasMilestone('d', 3)||hasMilestone('t', 3)||hasMilestone('s', 3))||hasMilestone('l', 1)))) setBuyableAmount(this.layer, 11, getBuyableAmount(this.layer, 11).add(3))
         
     },
     passiveGeneration() {

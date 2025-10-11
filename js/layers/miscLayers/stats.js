@@ -42,7 +42,8 @@ addLayer('stats', {
             description: () => `${colored("Abstract", "#000")}<br>
             Amount: ${format(player.a.points, 0)}<br>
             Cost Formula: ${format(tmp.a.requires)} * ${format(tmp.a.base)}${superscript("Abstract"+superscript(format(tmp.a.exponent)))}<br>
-            Total Cost Divison: ${formatDiv(tmp.a.gainMult.pow(-1))}<br><br>
+            Total Cost Divison: ${formatDiv(tmp.a.gainMult.pow(-1))}<br>
+            Total Cost Exp: ${formatPow(tmp.a.gainExp)}<br><br>
             ${colored("Abstract Power", "#000", "h4")}
             Amount: ${format(player.a.power)}<br>
             Base Gain: ${format(tmp.a.baseAPGen)}<br>

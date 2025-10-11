@@ -254,7 +254,7 @@ addLayer('t', {
                 return `
                     ${color(this.title(), null, "h3")}<br>
                     ${formatDecimalTime(-1, 0, "s")} Dice cooldown time<br><br>
-                    Cost: ${shiftDown?format(tmp.t.upgrades[11].cost)+"s":formatDecimalTime(tmp.t.upgrades[11].cost)} in time.
+                    Cost: ${shiftDown?format(tmp.t.upgrades[12].cost)+"s":formatDecimalTime(tmp.t.upgrades[12].cost)} in time.
                 `
             },
             cost: E(10_000_000),
@@ -269,6 +269,27 @@ addLayer('t', {
         player.t.time = player.t.time.add(timeGain.mul(diff))
         player.t.currentTime = calculateCurrentTime().add(diff)
     },
+
+    doReset(resettingLayer) {
+        if (layers[resettingLayer].row <= this.row) {
+            return;
+        };
+
+        let keptMS = []
+
+        if (layers[resettingLayer].row == 3) {
+            if (hasMilestone("l", 1)) keptMS.push(1, 3)
+            if (hasMilestone("l", 2)) keptMS.push(2)
+        }
+
+        let keep = [keptMS]
+
+        layerDataReset(this.layer, keep)
+
+        player[this.layer].milestones.push(...keptMS)
+    },
+
+    canBuyMax() {return hasMilestone('l', 3)},
 })
 
 function timeEffects(type) {

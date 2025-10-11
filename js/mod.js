@@ -13,7 +13,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.3 testing patch 4",
+	num: "0.3 testing patch 5",
 	name: "so goober",
 }
 
@@ -60,6 +60,7 @@ function getBasePointGen() {
 	if (hasUpgrade('j', 24)) base = base.add(0.05)
 
 	base = base.add(tmp.a.effect)
+	base = base.mul(tmp.l.effect)
 	return base
 }
 
@@ -72,6 +73,9 @@ function getPointMult() {
 		if (hasUpgrade('j', 15)) mult = mult.mul(2)
 		if (hasUpgrade('j', 33)) mult = mult.mul(upgradeEffect('j', 33))
 		if (hasUpgrade("t", 11)) mult = mult.mul(upgradeEffectInTime(11, 2))
+
+	// Milestones
+		if (hasMilestone("l", 2)) mult = mult.mul(milestoneEffect('l', 2))
 	
 	// Buyables
 		if (getBuyableAmount('j', 11).gte(1)) mult = mult.mul(buyableEffect('j', 11))
@@ -132,7 +136,7 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: Ignore this, you are a goober<br> dont do life reset yet, not implemented. <br>smots gaming`
+		return `Current Endgame: Ignore this, you are a goober<br> ${colored("new stuff, go test", "#fff")} <br>smots gaming`
 	}
 ]
 
