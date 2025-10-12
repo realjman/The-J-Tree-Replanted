@@ -45,6 +45,7 @@ addLayer('g', {
     if (hasMilestone('a', 24)) gain = gain.mul(getAxisBoosts('x'))
     if (hasMilestone('l', 1)) gain = gain.mul(3)
     if (hasUpgrade('d', 21)) gain = gain.mul(upgradeEffect('d', 21))
+    if (hasUpgrade('j', 43)) gain = gain.mul(upgradeEffect('j', 43))
     if (hasUpgrade('t', 11)) gain = gain.mul(upgradeEffectInTime(11, 1))
     gain = gain.mul(tmp.d.diceEffect1)
     gain = gain.mul(timeEffects(4))
@@ -627,4 +628,5 @@ addLayer('g', {
   automate() {
     if (hasMilestone('d', 6) && player[this.layer].autoBuyable) {buyMaxBuyable(this.layer, 11); buyMaxBuyable(this.layer, 12); buyMaxBuyable(this.layer, 13); buyMaxBuyable(this.layer, 14)}
   },
+  autoUpgrade: () => hasMilestone('l', 4)
 })

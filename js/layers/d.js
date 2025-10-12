@@ -71,6 +71,15 @@ addLayer('d', {
         let x = E(60)
         return x
     },
+
+    gainMult() {
+        let mul = E(1)
+
+        if (hasUpgrade('j', 41)) mul = mul.div(1.1)
+
+        return mul
+    },
+
     layerShown() {return hasUpgrade('g', 35) || player.t.unlocked || player.d.unlocked},
     tabFormat: {
         "Main": {
@@ -257,7 +266,7 @@ addLayer('d', {
                 return (x.add(1)).pow(0.01).log(10).sub(0.005).max(0)
             },
             effectDisplay() {return formatAdd(upgradeEffect(this.layer, this.id))},
-            tooltip: () => `Effect: max(0, ${writeLog('10', writeExp(0.01, 'x + 1'))} - 0.005)`,
+            tooltip: () => `Effect: max(0, ${writeLog('10', writeExp(0.01, 'x + 1', null, true))} - 0.005)`,
             cost: E(300),
             currencyDisplayName: "Dice Fragments",
             currencyInternalName: "fragments",

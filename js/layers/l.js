@@ -80,5 +80,11 @@ addLayer('l', {
       done() {return player[this.layer].points.gte(3)},
       unlocked() {return hasMilestone("l", 1)}
     },
+    4: {
+      requirementDescription: `4 Life Points`,
+      effectDescription: () => `Keep 14th ${colored("Abstract", tmp.a.color)} milestone on reset, autobuy ${colored("Growth", tmp.g.color)} upgrades, unlock more ${colored("J-point", tmp.j.color)} upgrades.`,
+      done() {return player[this.layer].points.gte(4)},
+      unlocked() {return hasMilestone("l", 2)}
+    },
   }
 })

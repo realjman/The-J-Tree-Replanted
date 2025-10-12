@@ -39,6 +39,8 @@ addLayer("j", {
         exp = E(1)
         if (hasMilestone('a', 20)) exp = exp.add(0.01)
         if (hasMilestone('d', 5)) exp = exp.add(0.01)
+
+        if (hasUpgrade('j', 44)) exp = exp.add(upgradeEffect('j', 44))
         return exp
     },
     passive() {
@@ -189,6 +191,54 @@ addLayer("j", {
             cost: new Decimal(1_000_000),
             unlocked() {return hasUpgrade(this.layer, 34)},
         },
+        41: {
+            title: "Row 3 Buff",
+            description: function() {return `Divide all row 3 layers' requirement by ${formatDiv(1.1)}`},
+            cost: new Decimal("1e100"),
+            unlocked() {return hasUpgrade(this.layer, 35)&&hasMilestone('l', 4)},
+        },
+        42: {
+            title: "How classic can it be?",
+            description: function() {return `${colored("Classical Tree Game", "#000")}'s effect softcap starts ${formatX("1e10")} later again.`},
+            cost: new Decimal("1e150"),
+            unlocked() {return hasUpgrade(this.layer, 41)&&hasMilestone('l', 4)},
+        },
+        43: {
+            title: "Plants are lives",
+            description: function() {return `${colored("Life Points", "#538686")} boosts all plants gain.`},
+            cost: new Decimal("1e175"),
+            effect() {
+                x = player.l.points
+                return x.add(1).pow(1.5)
+            },
+            effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
+            tooltip: () => `Effect: ${writeExp(1.5, "x + 1", null, true)}`,
+            unlocked() {return hasUpgrade(this.layer, 42)&&hasMilestone('l', 4)},
+        },
+        44: {
+            title: "Efficiency Boosted",
+            description: function() {return `J-points adds to its exponent.`},
+            cost: new Decimal("1e200"),
+            effect() {
+                x = player.j.points
+                return x.add(1).log(10).pow(0.2).div(200)
+            },
+            effectDisplay() {return `${formatAdd(upgradeEffect(this.layer, this.id))}`},
+            tooltip: () => `Effect: ${writeExp(0.2, writeLog(10, "x + 1"))} / 200`,
+            unlocked() {return hasUpgrade(this.layer, 43)&&hasMilestone('l', 4)},
+        },
+        45: {
+            title: "What a life",
+            description: function() {return `${colored("Life Points", "#538686")} boosts ${colored("Classical Tree Game", "#000")}'s effect base.`},
+            cost: new Decimal("1e220"),
+            effect() {
+                x = player.l.points
+                return x.add(1).pow(0.01)
+            },
+            effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
+            tooltip: () => `Effect: ${writeExp(0.01, "x + 1", null, true)}`,
+            unlocked() {return hasUpgrade(this.layer, 44)&&hasMilestone('l', 4)},
+        },
     },
     buyables: {
         11: {
@@ -204,6 +254,7 @@ addLayer("j", {
                 let x = E(2)
                 if (hasMilestone('a', 18)) x = x.add(0.1)
                 if (hasMilestone('s', 2)) x = x.mul(tmp.s.volumeEffect3)
+                if (hasUpgrade("j", 45)) x = x.mul(upgradeEffect("j", 45))
                 return x
             },
             display() {
@@ -263,6 +314,7 @@ addLayer("j", {
                 let start = E(1e100)
                 if (hasMilestone('a', 26)) start = start.mul("e10")
                 if (hasMilestone('l', 2)) start = start.mul("e10")
+                if (hasUpgrade('j', 42)) start = start.mul("e10")
                 return start
             },
             scPower() {

@@ -56,6 +56,14 @@ addLayer('s', {
         return (hasMilestone('s', 2)?x.pow(0.005):E(1))
     },
 
+    gainMult() {
+        let mul = E(1)
+
+        if (hasUpgrade('j', 41)) mul = mul.div(1.1)
+
+        return mul
+    },
+
     layerShown() {return hasUpgrade('g', 35) || player.s.unlocked || player.d.unlocked},
     tabFormat: {
         "Main": {

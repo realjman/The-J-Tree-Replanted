@@ -380,7 +380,7 @@ addLayer("a", {
     28: {
       requirementDescription: "75 Abstracts",
       effectDescription: () => `Abstract effect is better again.`,
-      done() {return player[this.layer].points.gte(60)},
+      done() {return player[this.layer].points.gte(75)},
       tooltip: () => `Abstract / 16 => Abstract / 10`,
       unlocked() {return (hasMilestone(this.layer, 26)||hasMilestone(this.layer, 28))&&hasMilestone('l', 3)},
     },
@@ -514,12 +514,11 @@ addLayer("a", {
     let keepAB = false
     let keepAA = false
 
-    if (layers[resettingLayer].row == 2) {
+    if (layers[resettingLayer].row >= 2) {
       if (hasMilestone(resettingLayer, 1)) keptMS.push(0, 8, 14)
       if (hasMilestone(resettingLayer, 3)) keptMS.push(3, 4, 5, 6)
-    }
-    if (layers[resettingLayer].row >= 3) {
       if (hasMilestone("l", 1)) keptMS.push(0, 8, 14, 3, 4, 5, 6)
+      if (hasMilestone("l", 4)) keptMS.push(13)
     }
 
     if (hasMilestone('a', 24)) keptMS.push(24)

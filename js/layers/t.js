@@ -57,6 +57,15 @@ addLayer('t', {
 
         return gain
     },
+
+    gainMult() {
+        let mul = E(1)
+
+        if (hasUpgrade('j', 41)) mul = mul.div(1.1)
+
+        return mul
+    },
+
     layerShown() {return hasUpgrade('g', 35) || player.t.unlocked || player.d.unlocked},
     tabFormat: {
         "Main": {
