@@ -13,8 +13,8 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.3 testing patch 6",
-	name: "youre fake",
+	num: "0.3 testing patch 7",
+	name: "elephant green screen effect",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
@@ -107,6 +107,9 @@ function getPointExp() {
 	exp = exp.add(tmp.s.effectExp)
 	if (getBuyableAmount("t", 11).gte(5)) exp = exp.add(buyableEffect("t", 11))
 
+	// Mult
+	if (hasChallenge('l', 11)) exp = exp.mul(1.01)
+
 	return exp
 }
 
@@ -121,6 +124,10 @@ function getPointGen() {
 	
 	gain = base.mul(mult)
 	if (gain.gte(1)) gain = gain.pow(exp)
+
+	// Challenges Nerf
+	if (inChallenge("l", 11)) gain = gain.pow(0.5)
+	
 	return gain
 }
 
@@ -136,7 +143,10 @@ function addedPlayerData() { return {
 // Display extra things at the top of the page
 var displayThings = [
 	function(){
-		return `Current Endgame: Ignore this, you are a goober<br> ${colored("new stuff, go test", "#fff")} <br>smots gaming`
+		return `Current Endgame: Ignore this, you are a goober<br>
+		${colored("new stuff, go test", "#fff")} <br>
+		smots gaming<br>
+		`
 	}
 ]
 

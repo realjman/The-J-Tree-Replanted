@@ -223,7 +223,7 @@ addLayer('g', {
       },
       effect() {
         x = player[this.layer].points
-        return Decimal.log(x.add(1), 8).add(1)
+        return Decimal.log(x.add(1).max(1), 8).add(1)
       },
       effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
       tooltip: () => `Effect: log${subscript("8")}(Growth + 1) + 1`,
@@ -255,7 +255,7 @@ addLayer('g', {
       effect() {
         x = player.g.points
         if (hasMilestone('a', 22)) return Decimal.log(x.add(1), 10).add(1)
-        return (Decimal.log(x.add(1), 10).div(2)).add(1)
+        return (Decimal.log(x.add(1).max(1), 10).div(2)).add(1)
       },
       effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
       cost: E(200),
@@ -285,7 +285,7 @@ addLayer('g', {
       description: function() {return `Your unspent J-points boost sprouts.`},
       effect() {
         x = player.j.points
-        return Decimal.log(x.add(1), 10).div(10).add(1)
+        return Decimal.log(x.add(1).max(1), 10).div(10).add(1)
       },
       effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
       cost: E(3000),
@@ -309,7 +309,7 @@ addLayer('g', {
       description: function() {return `Plants gives a boost to sprouts at a reduced rate.`},
       effect() {
         x = player.g.plants
-        return Decimal.log(x.add(1), 4).add(1)
+        return Decimal.log(x.add(1).max(1), 4).add(1)
       },
       effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
       cost: E(20_000),
@@ -324,7 +324,7 @@ addLayer('g', {
       description: function() {return `Growth gives a boost to plants at reduced rate.`},
       effect() {
         x = player.g.points
-        return Decimal.log(x.add(1), 10).div(2).add(1)
+        return Decimal.log(x.add(1).max(1), 10).div(2).add(1)
       },
       effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
       cost: E(300),

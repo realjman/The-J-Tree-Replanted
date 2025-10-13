@@ -49,7 +49,7 @@ addLayer("a", {
   gainExp() {
     let exp = new Decimal(1)
     if (hasMilestone('l', 1)) exp = exp.mul(0.99)
-    return exp
+    return exp.pow(-1)
   },
   baseAPGen() {
     let base = E(0)

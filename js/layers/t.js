@@ -289,6 +289,7 @@ addLayer('t', {
         if (layers[resettingLayer].row == 3) {
             if (hasMilestone("l", 1)) keptMS.push(1, 3)
             if (hasMilestone("l", 2)) keptMS.push(2)
+            if (hasChallenge("l", 11)) keptMS.push(6)
         }
 
         let keep = [keptMS]

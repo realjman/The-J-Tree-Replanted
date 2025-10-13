@@ -73,7 +73,10 @@ addLayer('stats', {
             title: () => `${colored("LAYER 3", "#000", "h2")}`,
             description: () => `${colored("Time", "#000")}<br>
             Amount: ${format(player.t.points)}<br>
-            Cost Formula: ${format(tmp.t.requires)} * ${format(tmp.t.base, 3)}${superscript("Time"+superscript(format(tmp.t.exponent)))}<br>
+            Cost Formula: ${format(tmp.t.requires)} * ${format(tmp.t.base, 3)}${superscript("Time"+superscript(format(tmp.t.exponent)))}<br><br>
+
+            ${colored("Time", DARK)}<br>
+            Time: ${formatDecimalTime(player.t.time)} / ${format(player.t.time)}s
             `,
             color: () => tmp.t.color,
             unlocked() {return player.t.unlocked},
@@ -98,6 +101,15 @@ addLayer('stats', {
             Volume of 3D Plane: ${format(tmp.s.getSpaceVolume)} units${superscript(3)}
             `,
             color: () => tmp.s.color,
+            unlocked() {return player.s.unlocked},
+        },
+        8: {
+            title: () => `${colored("LAYER 4", "#000")}`,
+            description: () => `${colored("Life Points", "#000")}<br>
+            Amount: ${format(player.l.points)}<br>
+            Cost Formula: floor(${writeLog(10, "J-fragments + 1")} / ${format(308.25)})<br>
+            `,
+            color: () => tmp.l.color,
             unlocked() {return player.s.unlocked},
         },
     },

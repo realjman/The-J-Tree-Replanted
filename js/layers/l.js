@@ -12,12 +12,19 @@ addLayer('l', {
   resource: "Life Points",
   baseResource: "J-fragments",
   baseAmount() {return player.points},
-  prestigeButtonText() {return `Condense everything and form life with ${formatAdd(getResetGain(this.layer))} Life Points<br><br>Next Life Point at ${format(getNextAt(this.layer, true))} J-fragments`},
+  prestigeButtonText() {return player.l.points.lt(this.currentCap())?`Condense everything and form life with ${formatAdd(getResetGain(this.layer))} Life Points<br><br>${getNextAt(this.layer, true).lt(this.currentCap())?"Next Life Point at "+format(getNextAt(this.layer, true))+" J-fragments":"Unable to gain more due to hitting the cap."}`:`Unable to reset due to hitting the current cap.`},
   type: "custom",
+
+  currentCap() {
+    let x = E(5)
+
+    return x
+  },
+
   requires() {return E("2^1024")},
-  getResetGain() {return player.points.add(1).log(10).div(308.25).floor()}, // player.points.add(1).log(2).div(1024)
+  getResetGain() {return player.points.add(1).log(10).div(308.25).floor().clamp(0, this.currentCap().sub(player.l.points))}, // player.points.add(1).log(2).div(1024)
   getNextAt() {return this.requires().pow(getResetGain(this.layer).add(1))},
-  canReset() {return player.points.gte(this.requires())},
+  canReset() {return player.points.gte(this.requires()) && player.points.lt(this.currentCap())},
 
   effect() {
     let x = player[this.layer].points
@@ -34,9 +41,11 @@ addLayer('l', {
     "Main": {
       content: [
         "main-display",
-          "prestige-button",
-          "resource-display",
-          ['microtabs', 'main'],
+        ["raw-html", () => `Your current Life Points cap is ${colored(format(tmp.l.currentCap), tmp.l.color)}`],
+        "blank",
+        "prestige-button",
+        "resource-display",
+        ['microtabs', 'main'],
       ],
     },
   },
@@ -46,8 +55,14 @@ addLayer('l', {
         content: [
           "milestones"
         ],
-      }
-    }
+      },
+      Challenges: {
+        content: [
+          "challenges",
+        ],
+        unlocked() {return hasMilestone("l", 5)}
+      },
+    },
   },
 
   milestones: {
@@ -85,6 +100,31 @@ addLayer('l', {
       effectDescription: () => `Keep 14th ${colored("Abstract", tmp.a.color)} milestone on reset, autobuy ${colored("Growth", tmp.g.color)} upgrades, unlock more ${colored("J-point", tmp.j.color)} upgrades.`,
       done() {return player[this.layer].points.gte(4)},
       unlocked() {return hasMilestone("l", 2)}
+    },
+    5: {
+      requirementDescription: `5 Life Points [5]`,
+      effectDescription: () => `Unlock Life Challenges.`,
+      done() {return player[this.layer].points.gte(5)},
+      unlocked() {return hasMilestone("l", 3)}
+    },
+  },
+
+  challenges: {
+    11: {
+      name: `Reduced fragments`,
+      challengeDescription: () => `J-fragments gain is ${formatPow(0.5)} in this challenge.`,
+      goalDescription: () => `${format("e55")} J-fragments`,
+      rewardDescription: () => `${formatX(1.01)} to J-fragments gain exponent, keep 6th Time and Dice milestones.`,
+      canComplete: () => player.points.gte("e55"),
+      unlocked() {return hasMilestone("l", 5)},
+    },
+    12: {
+      name: `No Plants (WIP)`,
+      challengeDescription: () => `All the Plant generation is disabled.`,
+      goalDescription: () => `More than 2`,
+      rewardDescription: () => `WIP`,
+      canComplete: () => player.points.gte("e55"),
+      unlocked() {return hasMilestone("l", 5)&&hasChallenge("l", 11)},
     },
   }
 })
