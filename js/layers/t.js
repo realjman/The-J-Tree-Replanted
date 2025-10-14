@@ -52,6 +52,8 @@ addLayer('t', {
         mul = mul.mul(timeEffects(3))
         mul = mul.mul(buyableEffect('t', 12))
         if (hasMilestone('a', 25)) mul = mul.mul(3)
+        
+        if (hasChallenge('l', 12)) mul = mul.mul(challengeEffect("l", 12))
 
         let gain = base.mul(mul)
 

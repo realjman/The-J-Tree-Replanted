@@ -56,6 +56,7 @@ addLayer('d', {
         if (hasUpgrade(this.layer, 13)) x = x.mul(upgradeEffect(this.layer, 13))
         if (hasUpgrade(this.layer, 15)) x = x.mul(upgradeEffect(this.layer, 15))
         if (hasMilestone('a', 25)) x = x.mul(3)
+        if (hasChallenge('l', 12)) x = x.mul(challengeEffect("l", 12))
         return x
     },
 

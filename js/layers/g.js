@@ -50,6 +50,8 @@ addLayer('g', {
     gain = gain.mul(tmp.d.diceEffect1)
     gain = gain.mul(timeEffects(4))
 
+    if (inChallenge("l", 12)) gain = E(0)
+
     return gain
   },
   seedGain() {

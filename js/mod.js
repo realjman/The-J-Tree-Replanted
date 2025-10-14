@@ -13,7 +13,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.3 testing patch 7",
+	num: "0.3 testing patch 8",
 	name: "elephant green screen effect",
 }
 

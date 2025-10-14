@@ -12,7 +12,7 @@ addLayer('l', {
   resource: "Life Points",
   baseResource: "J-fragments",
   baseAmount() {return player.points},
-  prestigeButtonText() {return player.l.points.lt(this.currentCap())?`Condense everything and form life with ${formatAdd(getResetGain(this.layer))} Life Points<br><br>${getNextAt(this.layer, true).lt(this.currentCap())?"Next Life Point at "+format(getNextAt(this.layer, true))+" J-fragments":"Unable to gain more due to hitting the cap."}`:`Unable to reset due to hitting the current cap.`},
+  prestigeButtonText() {return player.l.points.lt(this.currentCap())?`Condense everything and form life with ${formatAdd(getResetGain(this.layer))} Life Points<br><br>${getNextAt(this.layer, true).lte(this.currentCap())?"Next Life Point at "+format(getNextAt(this.layer, true))+" J-fragments":"Unable to gain more due to hitting the cap."}`:`Unable to reset due to hitting the current cap.`},
   type: "custom",
 
   currentCap() {
@@ -119,12 +119,19 @@ addLayer('l', {
       unlocked() {return hasMilestone("l", 5)},
     },
     12: {
-      name: `No Plants (WIP)`,
+      name: `No Plants`,
       challengeDescription: () => `All the Plant generation is disabled.`,
-      goalDescription: () => `More than 2`,
-      rewardDescription: () => `WIP`,
-      canComplete: () => player.points.gte("e55"),
+      goalDescription: () => `${format("e60")} J-fragments`,
+      rewardDescription: () => `J-fragments boosts Dice Fragments and Time gain.`,
+      canComplete: () => player.points.gte("e60"),
       unlocked() {return hasMilestone("l", 5)&&hasChallenge("l", 11)},
+      rewardEffect() {
+        let x = player.points
+        return x.add(1).max(1).log(10).pow(0.5).add(1)
+      },
+      rewardDisplay() {
+        return `Currently: ${formatX(challengeEffect(this.layer, this.id))}`
+      },
     },
   }
 })
