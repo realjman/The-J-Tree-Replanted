@@ -12,7 +12,7 @@ addLayer('l', {
   resource: "Life Points",
   baseResource: "J-fragments",
   baseAmount() {return player.points},
-  prestigeButtonText() {return player.l.points.lt(this.currentCap())?`Condense everything and form life with ${formatAdd(getResetGain(this.layer))} Life Points<br><br>${getNextAt(this.layer, true).lte(this.currentCap())?"Next Life Point at "+format(getNextAt(this.layer, true))+" J-fragments":"Unable to gain more due to hitting the cap."}`:`Unable to reset due to hitting the current cap.`},
+  prestigeButtonText() {return player.l.points.lt(this.currentCap())?`Condense everything and form life with ${formatAdd(getResetGain(this.layer))} Life Points<br><br>${Decimal.add(player.l.points, getResetGain("l")).lte(this.currentCap())?"Next Life Point at "+format(getNextAt(this.layer, true))+" J-fragments":"Unable to gain more due to hitting the cap."}`:`Unable to reset due to hitting the current cap.`},
   type: "custom",
 
   currentCap() {
@@ -24,7 +24,7 @@ addLayer('l', {
   requires() {return E("2^1024")},
   getResetGain() {return player.points.add(1).log(10).div(308.25).floor().clamp(0, this.currentCap().sub(player.l.points))}, // player.points.add(1).log(2).div(1024)
   getNextAt() {return this.requires().pow(getResetGain(this.layer).add(1))},
-  canReset() {return player.points.gte(this.requires()) && player.points.lt(this.currentCap())},
+  canReset() {return player.points.gte(this.requires()) && player.l.points.lt(this.currentCap())},
 
   effect() {
     let x = player[this.layer].points
