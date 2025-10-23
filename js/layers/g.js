@@ -41,6 +41,7 @@ addLayer('g', {
   },
   globalPlantBoost() {
     let gain = E(1)
+    let exp = E(1)
 
     if (hasMilestone('a', 24)) gain = gain.mul(getAxisBoosts('x'))
     if (hasMilestone('l', 1)) gain = gain.mul(3)
@@ -50,9 +51,11 @@ addLayer('g', {
     gain = gain.mul(tmp.d.diceEffect1)
     gain = gain.mul(timeEffects(4))
 
+    if (hasMilestone("l", 7)) exp = exp.mul(1.01)
+
     if (inChallenge("l", 12)) gain = E(0)
 
-    return gain
+    return gain.pow(exp)
   },
   seedGain() {
     let gain = E(0)
@@ -628,7 +631,10 @@ addLayer('g', {
     "display-boxes"() {return {'width' : '100%'}}
   },
   automate() {
-    if (hasMilestone('d', 6) && player[this.layer].autoBuyable) {buyMaxBuyable(this.layer, 11); buyMaxBuyable(this.layer, 12); buyMaxBuyable(this.layer, 13); buyMaxBuyable(this.layer, 14)}
+    if (hasMilestone('d', 6) && player[this.layer].autoBuyable) {
+      if (hasMilestone('t', 4)) {buyMaxBuyable(this.layer, 11); buyMaxBuyable(this.layer, 12); buyMaxBuyable(this.layer, 13); buyMaxBuyable(this.layer, 14)}
+      else {buyBuyable(this.layer, 11); buyBuyable(this.layer, 12); buyBuyable(this.layer, 13); buyBuyable(this.layer, 14)}
+    }
   },
   autoUpgrade: () => hasMilestone('l', 4)
 })

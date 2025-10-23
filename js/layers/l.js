@@ -12,11 +12,12 @@ addLayer('l', {
   resource: "Life Points",
   baseResource: "J-fragments",
   baseAmount() {return player.points},
-  prestigeButtonText() {return player.l.points.lt(this.currentCap())?`Condense everything and form life with ${formatAdd(getResetGain(this.layer))} Life Points<br><br>${Decimal.add(player.l.points, getResetGain("l")).lte(this.currentCap())?"Next Life Point at "+format(getNextAt(this.layer, true))+" J-fragments":"Unable to gain more due to hitting the cap."}`:`Unable to reset due to hitting the current cap.`},
+  prestigeButtonText() {return player.l.points.lt(this.currentCap())?`Condense everything and form life with ${formatAdd(getResetGain(this.layer))} Life Points<br><br>${Decimal.add(player.l.points, getResetGain("l")).lt(this.currentCap())?"Next Life Point at "+format(getNextAt(this.layer, true))+" J-fragments":"Unable to gain more due to hitting the cap."}`:`Unable to reset due to hitting the current cap.`},
   type: "custom",
 
   currentCap() {
     let x = E(5)
+    if (hasChallenge('l', 13)) x = x.mul(2)
 
     return x
   },
@@ -48,6 +49,18 @@ addLayer('l', {
         ['microtabs', 'main'],
       ],
     },
+    "Buyables": {
+      content: [
+        "main-display",
+        ["raw-html", () => `Your current Life Points cap is ${colored(format(tmp.l.currentCap), tmp.l.color)}`],
+        "blank",
+        "prestige-button",
+        "resource-display",
+        "buyables",
+        ["raw-html", () => `<img src="./assets/img/elephant-green.gif"></img>`]
+      ],
+      unlocked() {return hasMilestone('l', 8)}
+    }
   },
   microtabs: {
     main: {
@@ -107,6 +120,24 @@ addLayer('l', {
       done() {return player[this.layer].points.gte(5)},
       unlocked() {return hasMilestone("l", 3)}
     },
+    6: {
+      requirementDescription: `7 Life Points`,
+      effectDescription: () => `Square ${colored("Just Another Synergy", DARK)} effect and second ${colored("Abstract", tmp.a.color)} milestone effect, ${formatX(1.01)} to J-fragment's gain exponent.`,
+      done() {return player[this.layer].points.gte(7)},
+      unlocked() {return hasMilestone("l", 4)}
+    },
+    7: {
+      requirementDescription: `9 Life Points`,
+      effectDescription: () => `Unlocks another Life challenge, ${formatPow(1.01)} to Global Plant Boost (all the plants), ${formatAdd(1)}% to Golden Dice Fragment chance.`,
+      done() {return player[this.layer].points.gte(9)},
+      unlocked() {return hasMilestone("l", 5)}
+    },
+    8: {
+      requirementDescription: `10 Life Points and Completed ${colored("Missing Layer 3", DARK)}`,
+      effectDescription: () => `Unlock Life Buyables.`,
+      done() {return player[this.layer].points.gte(10) && hasChallenge("l", 21)},
+      unlocked() {return hasMilestone("l", 6)}
+    },
   },
 
   challenges: {
@@ -130,8 +161,24 @@ addLayer('l', {
         return x.add(1).max(1).log(10).pow(0.5).add(1)
       },
       rewardDisplay() {
-        return `Currently: ${formatX(challengeEffect(this.layer, this.id))}`
+        return `${formatX(challengeEffect(this.layer, this.id))}<br>${shiftDown ? 'Effect: '+writeExp(0.5, writeLog(10, "x + 1"))+' + 1' : "(Hold shift for formula)"}`
       },
+    },
+    13: {
+      name: `Scaled Abstract`,
+      challengeDescription: () => `Abstract's requirement is now ${formatPow(1.5)}`,
+      goalDescription: () => `${format("e300")} J-fragments`,
+      rewardDescription: () => `Max Life Point cap is now increased by ${formatX(2)}, keep 4th Time and Space milestones.`,
+      canComplete: () => player.points.gte("e300"),
+      unlocked() {return hasMilestone("l", 5)&&hasChallenge("l", 12)},
+    },
+    21: {
+      name: `Missing Layer 3`,
+      challengeDescription: () => `Every Layer 3 features, milestones and effects are disabled.`,
+      goalDescription: () => `${format("e208")} J-fragments`,
+      rewardDescription: () => `This is one of the requirements to unlock Life Buyables.`,
+      canComplete: () => player.points.gte("e208"),
+      unlocked() {return hasMilestone("l", 7)&&hasChallenge("l", 13)},
     },
   }
 })

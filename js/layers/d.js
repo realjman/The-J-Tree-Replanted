@@ -62,6 +62,7 @@ addLayer('d', {
 
     gDiceChance() {
         let x = E(0.01)
+        if (hasMilestone("l", 7)) x = x.add(0.01)
         return x
     },
     gDiceGain() {
@@ -222,7 +223,7 @@ addLayer('d', {
             title: () => `Roll the Dice`,
             display() {return `<h1>${format(player.d.lastDiceValue, 0)}</h1><br> Cooldown: ${formatDecimalTime(player.d.diceCD)}`},
             unlocked() {return player.d.unlocked},
-            canClick() {return player.d.diceCD.lte(0) && player.d.unlocked},
+            canClick() {return player.d.diceCD.lte(0) && player.d.unlocked && !inChallenge("l", 21)},
             onClick() {
                 player.d.diceCD = tmp.d.diceRollCD
                 player.d.lastDiceValue = rollDice(tmp.d.maxDiceSides)
@@ -237,7 +238,7 @@ addLayer('d', {
             title: () => `Gain golden dice fragments`,
             display() {return `<h1>${format(tmp.d.gDiceGain)}</h1><br> Cooldown: ${formatDecimalTime(player.d.gDiceFragCD)}`},
             unlocked() {return hasMilestone('a', 24)},
-            canClick() {return player.d.gDiceFragCD.lte(0) && hasMilestone('a', 24)},
+            canClick() {return player.d.gDiceFragCD.lte(0) && hasMilestone('a', 24) && !inChallenge("l", 21)},
             onClick() {
                 player.d.gDiceFragCD = tmp.d.gDiceGainCD
                 player.d.goldenFragments = player.d.goldenFragments.add(tmp.d.gDiceGain)
@@ -384,6 +385,12 @@ addLayer('d', {
     },
 
     canBuyMax() {return hasMilestone('l', 3)},
+
+    hotkeys: [
+        {key: "d", description: "D: Reset to perform a Dice reset", onPress(){if (canReset(this.layer)) doReset(this.layer)}, unlocked() {return player[this.layer].unlocked}},
+    ],
+
+    deactivated() {return inChallenge("l", 21)},
 })
 
 function rollDice(max) {

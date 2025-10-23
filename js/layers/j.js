@@ -39,6 +39,7 @@ addLayer("j", {
         exp = E(1)
         if (hasMilestone('a', 20)) exp = exp.add(0.01)
         if (hasMilestone('d', 5)) exp = exp.add(0.01)
+        if (hasMilestone('a', 29)) exp = exp.add(milestoneEffect("a", 29))
 
         if (hasUpgrade('j', 44)) exp = exp.add(upgradeEffect('j', 44))
         return exp
@@ -83,6 +84,7 @@ addLayer("j", {
                 if (!hasMilestone("a", 8)) eff = Decimal.log(x.pow(0.3).add(1), 4).add(1)
                 else eff = Decimal.log(x.pow(0.75).add(1), 3).add(1)
                 if (hasUpgrade(this.layer, 31)) eff = eff.mul(upgradeEffect(this.layer, 31))
+                if (hasMilestone("l", 6)) eff = eff.pow(2)
                 return eff
             },
             effectDisplay() {return `${formatX(upgradeEffect(this.layer, this.id))}`},
@@ -315,6 +317,7 @@ addLayer("j", {
                 if (hasMilestone('a', 26)) start = start.mul("e10")
                 if (hasMilestone('l', 2)) start = start.mul("e10")
                 if (hasUpgrade('j', 42)) start = start.mul("e10")
+                if (getBuyableAmount('t', 11).gte(6)) start = start.mul(timeEffects(6))
                 return start
             },
             scPower() {

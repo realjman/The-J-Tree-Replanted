@@ -49,6 +49,7 @@ addLayer("a", {
   gainExp() {
     let exp = new Decimal(1)
     if (hasMilestone('l', 1)) exp = exp.mul(0.99)
+    if (inChallenge('l', 13)) exp = exp.mul(1.5)
     return exp.pow(-1)
   },
   baseAPGen() {
@@ -169,8 +170,10 @@ addLayer("a", {
       effectDescription: () => `Boosts J-points based on the amount of Abstracts you have. Currently: ${formatX(milestoneEffect('a', 1))}`,
       effect() {
         x = player[this.layer].points
-        if (hasMilestone(this.layer, 18)) return x.pow(0.8).add(1)
-        return x.pow(0.6).add(1)
+        if (hasMilestone(this.layer, 18)) eff = x.pow(0.8).add(1)
+        else eff = x.pow(0.6).add(1)
+        if (hasMilestone('l', 6)) eff = eff.pow(2)
+        return eff
       },
       tooltip: () => `Effect: (Abstracts${superscript(format(hasMilestone('a', 18)?"0.8":"0.6"))} + 1)`,
       done() {return player[this.layer].points.gte(3)},
@@ -384,6 +387,17 @@ addLayer("a", {
       tooltip: () => `Abstract / 16 => Abstract / 10`,
       unlocked() {return (hasMilestone(this.layer, 26)||hasMilestone(this.layer, 28))&&hasMilestone('l', 3)},
     },
+    29: {
+      requirementDescription: "80 Abstracts [30]",
+      effectDescription: () => `J-points exponential gain is added based on ${colored("Abstract", tmp.a.color)}. Currently: ${formatAdd(milestoneEffect("a", 29))}`,
+      done() {return player[this.layer].points.gte(80)},
+      effect() {
+        x = player[this.layer].points
+        return Decimal.log(x.add(1).max(1), 10).div(100)
+      },
+      tooltip: () => `Effect: ${writeLog("10", "x + 1")} / 100`,
+      unlocked() {return (hasMilestone(this.layer, 27)||hasMilestone(this.layer, 29))&&hasMilestone('l', 3)},
+    },
   },
   buyables: {
     11: {
@@ -498,7 +512,10 @@ addLayer("a", {
   },
 
   automate() {
-    if (hasMilestone('t', 6) && player[this.layer].autoBuyable) {buyMaxBuyable(this.layer, 11); buyMaxBuyable(this.layer, 12)}
+    if (hasMilestone('t', 6) && player[this.layer].autoBuyable) {
+      if (hasMilestone('s', 4)) {buyMaxBuyable(this.layer, 11); buyMaxBuyable(this.layer, 12)}
+      else {buyBuyable(this.layer, 11); buyBuyable(this.layer, 12)}
+    }
   },
   autoPrestige() {
     return hasMilestone('l', 2) && player[this.layer].autoAbstract

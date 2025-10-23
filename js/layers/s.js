@@ -25,10 +25,12 @@ addLayer('s', {
 
     effect() {
         let x = player.s.points
+        if (inChallenge('l', 21)) return E(1)
         return E(2).pow(x)
     },
     effectExp() {
         let x = player.s.points
+        if (inChallenge('l', 21)) return E(0)
         return x.min(10).div(80).pow(1.1)
     },
 
@@ -354,6 +356,7 @@ addLayer('s', {
         if (layers[resettingLayer].row == 3) {
             if (hasMilestone("l", 1)) keptMS.push(1, 3)
             if (hasMilestone("l", 2)) keptMS.push(6)
+            if (hasChallenge("l", 13)) keptMS.push(4)
         }
 
         let keep = [keptMS]
@@ -364,6 +367,12 @@ addLayer('s', {
     },
 
     canBuyMax() {return hasMilestone('l', 3)},
+
+    hotkeys: [
+        {key: "s", description: "S: Reset to break the Space Continuum", onPress(){if (canReset(this.layer)) doReset(this.layer)}, unlocked() {return player[this.layer].unlocked}},
+    ],
+
+    deactivated() {return inChallenge("l", 21)},
 })
 
 function get3DPlane() {
@@ -377,7 +386,7 @@ function get3DPlane() {
 function getAxisBoosts(axis) {
     let [x, y, z] = get3DPlane()
 
-    if (!(['x', 'y', 'z'].includes(axis) && hasMilestone('a', 24))) return E(1);
+    if (!(['x', 'y', 'z'].includes(axis) && hasMilestone('a', 24)) || inChallenge("l", 21)) return E(1);
 
     if (axis == 'x') return x.pow(0.7) // plants
     if (axis == 'y') return y.mul(0.5).add(1) // j-points

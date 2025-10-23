@@ -13,7 +13,7 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.3 testing patch 8.1",
+	num: "0.3 testing patch 9",
 	name: "elephant green screen effect",
 }
 
@@ -109,6 +109,7 @@ function getPointExp() {
 
 	// Mult
 	if (hasChallenge('l', 11)) exp = exp.mul(1.01)
+	if (hasMilestone('l', 6)) exp = exp.mul(1.01)
 
 	return exp
 }
@@ -144,7 +145,7 @@ function addedPlayerData() { return {
 var displayThings = [
 	function(){
 		return `Current Endgame: Ignore this, you are a goober<br>
-		${colored("new stuff, go test", "#fff")} <br>
+		${colored("get to life buyables for funny", "#fff")} <br>
 		smots gaming<br>
 		`
 	}

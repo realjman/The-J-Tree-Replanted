@@ -4,6 +4,7 @@ const EFFECT_PRICE = [
     E(6_000),
     E(200_000),
     E(1e6),
+    E(1e14),
 ]
 
 function formatDecimalTime(s, ac=2, type='s') {
@@ -47,6 +48,8 @@ addLayer('t', {
     },
     timeGain() {
         let base = tmp.t.effect
+
+        if (inChallenge('l', 21)) return E(0)
 
         let mul = E(1)
         mul = mul.mul(timeEffects(3))
@@ -188,6 +191,7 @@ addLayer('t', {
                 if (getBuyableAmount('t', 11).gte(3)) h += `Boosts time based on time. Currently: ${formatX(timeEffects(3))} ${shiftDown?"[("+writeExp(1/3, "x")+" / 10) + 1]":""}<br>` // player.t.time.add(1).log(100).add(1).pow(2)
                 if (getBuyableAmount('t', 11).gte(4)) h += `Boosts all the plants based on time. Currently: ${formatX(timeEffects(4))} ${shiftDown?"["+writeExp(2, writeLog(100, "x + 1")+" + 1", null, true)+"]":""}<br>`
                 if (getBuyableAmount('t', 11).gte(5)) h += `Increases the J-fragments exponent based on time. Currently: ${formatAdd(timeEffects(5))} ${shiftDown?"["+writeExp(0.5, writeLog(10, "x + 1"), null, true)+" / 100]":""}<br>` // player.t.time.add(1).log(10).pow(0.5).div(100)
+                if (getBuyableAmount('t', 11).gte(6)) h += `Delays ${color("Classical Tree Game", DARK)}'s softcap based on time. Currently: ${formatX(timeEffects(6))} ${shiftDown?"[x + 1]":""}<br>` // player.t.time.add(1).log(10).pow(0.5).div(100)
 
                 if (getBuyableAmount('t', 11).gte(1)) h += `${shiftDown?"":"(Hold shift for formulas)"}<br>`
                 h += `Cost: ${shiftDown?format(tmp.t.buyables[11].cost)+"s":formatDecimalTime(tmp.t.buyables[11].cost)} in time.`
@@ -292,6 +296,7 @@ addLayer('t', {
             if (hasMilestone("l", 1)) keptMS.push(1, 3)
             if (hasMilestone("l", 2)) keptMS.push(2)
             if (hasChallenge("l", 11)) keptMS.push(6)
+            if (hasChallenge("l", 13)) keptMS.push(4)
         }
 
         let keep = [keptMS]
@@ -302,14 +307,23 @@ addLayer('t', {
     },
 
     canBuyMax() {return hasMilestone('l', 3)},
+
+    hotkeys: [
+        {key: "t", description: "T: Reset to condense Time", onPress(){if (canReset(this.layer)) doReset(this.layer)}, unlocked() {return player[this.layer].unlocked}},
+    ],
+
+    deactivated() {return inChallenge("l", 21)},
 })
 
 function timeEffects(type) {
-    if (getBuyableAmount('t', 11).gte(1) && type == 1) return player.t.time.add(1).log(10).pow(2).add(1)
-    if (getBuyableAmount('t', 11).gte(2) && type == 2) return player.t.time.div(10).add(1).pow(3)
-    if (getBuyableAmount('t', 11).gte(3) && type == 3) return player.t.time.pow(1/3).div(10).add(1)
-    if (getBuyableAmount('t', 11).gte(4) && type == 4) return player.t.time.add(1).log(100).add(1).pow(2)
-    if (getBuyableAmount('t', 11).gte(5) && type == 5) return player.t.time.add(1).log(10).pow(0.5).div(100)
+    if (!inChallenge("l", 21)) {
+        if (getBuyableAmount('t', 11).gte(1) && type == 1) return player.t.time.add(1).log(10).pow(2).add(1)
+        if (getBuyableAmount('t', 11).gte(2) && type == 2) return player.t.time.div(10).add(1).pow(3)
+        if (getBuyableAmount('t', 11).gte(3) && type == 3) return player.t.time.pow(1/3).div(10).add(1)
+        if (getBuyableAmount('t', 11).gte(4) && type == 4) return player.t.time.add(1).log(100).add(1).pow(2)
+        if (getBuyableAmount('t', 11).gte(5) && type == 5) return player.t.time.add(1).log(10).pow(0.5).div(100)
+        if (getBuyableAmount('t', 11).gte(6) && type == 6) return player.t.time.add(1)
+    }
 
     return E(1)
 }
@@ -328,10 +342,11 @@ function formatCurrentTime(time=player.t.currentTime) {
 }
 
 function upgradeEffectInTime(upg, type) {
-    if (upg == 11) {
-        if (type == 1) return calcDnNCurrentTime(true).mul(3).add(1)
-        if (type == 2) return calcDnNCurrentTime(false).pow(2).max(10)
+    if (!inChallenge("l", 21)) {
+        if (upg == 11) {
+            if (type == 1) return calcDnNCurrentTime(true).mul(3).add(1)
+            if (type == 2) return calcDnNCurrentTime(false).pow(2).max(10)
+        }
     }
-
     return E(1)
 }
